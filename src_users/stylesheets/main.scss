@@ -9,17 +9,21 @@
 
 .footer {
   clear: both;
-  margin-bottom: 50px;
-  text-align: center;
+  text-align: left;
+  margin: 20px 0 20px 0;
 
   img {
-    width: 40px;
+    width: 55px;
     padding-right: 5px;
   }
 
   span {
     vertical-align: middle;
   }
+}
+
+.mfga {
+  font-size: 24px;
 }
 
 .users-pagination {
@@ -32,5 +36,5 @@
 }
 
 th {
-  background-image: url('/media/pattern.jpg');
+  background-image: url("/media/pattern.jpg");
 }

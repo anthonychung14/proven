@@ -1,13 +1,9 @@
 {
-  "name": "redux-minimal",
+  "name": "Cryptocurrency",
   "version": "1.0.0",
-  "description": "Start building complex react-redux apps today, with this minimalist easy to understand starter kit (boilerplate)",
+  "description": "Why no lambo",
   "keywords": [
-    "react",
-    "redux",
-    "minimal",
-    "starter kit",
-    "boilerplate"
+    "crypto"
   ],
   "main": "index.js",
   "homepage": "http://redux-minimal.js.org/",
@@ -29,9 +25,11 @@
       "stage-3"
     ]
   },
-  "author": "Catalin Luntraru",
+  "author": "Tony Chung & Catalin Luntraru's starterpack",
   "license": "MIT",
   "dependencies": {
+    "firebase": "^5.4.0",
+    "immutable": "^3.8.2",
     "react": "^15.4.2",
     "react-bootstrap": "^0.30.7",
     "react-dom": "^15.4.2",
@@ -39,9 +37,15 @@
     "react-router": "^3.0.1",
     "react-router-bootstrap": "^0.23.1",
     "react-router-redux": "^4.0.7",
+    "recompose": "^0.28.2",
     "redux": "^3.6.0",
+    "redux-actions": "^2.6.1",
     "redux-form": "^6.4.3",
-    "redux-saga": "^0.14.3"
+    "redux-saga": "^0.16.0",
+    "redux-thunk": "^2.3.0",
+    "reselect": "^3.0.1",
+    "uuid": "^3.3.2",
+    "uuid-v4": "^0.1.0"
   },
   "devDependencies": {
     "babel-core": "^6.21.0",
