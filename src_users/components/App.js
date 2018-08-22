@@ -4,8 +4,10 @@ import { ProgressBar } from "react-bootstrap";
 import Menu from "./common/Menu";
 
 import { fetchUser } from "../actions/questions";
-import { getJobs } from "../selectors";
+import { getPresentJobs } from "../selectors";
 import "../stylesheets/main.scss";
+import Slider from "rc-slider";
+import "rc-slider/assets/index.css";
 
 // App component
 export class App extends React.Component {
@@ -36,6 +38,7 @@ export class App extends React.Component {
           <Menu />
         </div>
         <div style={{ paddingTop: "20px" }}>{children}</div>
+        <Slider />
       </div>
     );
   }
@@ -44,7 +47,7 @@ export class App extends React.Component {
 // export the connected class
 function mapStateToProps(state) {
   return {
-    jobs: getJobs(state),
+    jobs: getPresentJobs(state),
     users: state.users || []
   };
 }

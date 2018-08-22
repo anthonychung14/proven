@@ -135,6 +135,7 @@ function* watchForCreate(createChannel, enqueueChannel) {
     });
 
     if (pause) {
+      console.log("wait to start again");
       yield take(actionTypes.START_AGAIN);
     }
   }

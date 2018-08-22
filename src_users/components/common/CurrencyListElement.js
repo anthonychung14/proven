@@ -18,11 +18,11 @@ import { getReqJobById, getRequestsMounted } from "../../selectors";
 
 // User List Element component
 class CurrencyListElement extends React.Component {
-  componentWillMount() {
-    if (!this.props.inProcess) {
-      this.props.makeRequest(this.props.id);
-    }
-  }
+  // componentWillMount() {
+  //   if (!this.props.inProcess) {
+  //     this.props.makeRequest(this.props.id);
+  //   }
+  // }
 
   getBackgroundColor(status) {
     const map = {

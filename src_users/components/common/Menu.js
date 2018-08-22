@@ -4,9 +4,10 @@ import { Nav, NavItem, Glyphicon, Button, ButtonGroup } from "react-bootstrap";
 import { IndexLinkContainer, LinkContainer } from "react-router-bootstrap";
 
 import {
+  clearRequests,
   startRequests,
   startTimeChannel,
-  clearRequests
+  stopTime
 } from "../../actions/requests";
 
 // Menu component
@@ -70,6 +71,15 @@ class Menu extends React.Component {
           >
             Start TimeChannel
           </Button>
+          <Button
+            bsStyle="info"
+            bsSize="small"
+            onClick={() => {
+              this.props.stopTime();
+            }}
+          >
+            Pause
+          </Button>
         </ButtonGroup>
       </div>
     );
@@ -78,7 +88,7 @@ class Menu extends React.Component {
 
 export default connect(
   null,
-  { startRequests, startTimeChannel, clearRequests }
+  { startRequests, startTimeChannel, clearRequests, stopTime }
 )(Menu);
 
 /* 

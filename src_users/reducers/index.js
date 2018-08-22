@@ -1,4 +1,4 @@
-import { OrderedMap, Map, OrderedSet, fromJS, Set } from "immutable";
+import { OrderedMap, Map, OrderedSet, fromJS, Set, Record } from "immutable";
 import uuid from "uuid-v4";
 import Ring from "ringjs";
 
@@ -12,13 +12,26 @@ import { getTime } from "../util";
 import {
   getCurrenciesFromConfig,
   getFiatFromConfig,
+  getPresentJobsFromJobState,
   getReqJobById
 } from "../selectors";
 
 import actionTypes from "../action-types";
 import { startRequest, resolveRequest, failRequest } from "./currencyRequests";
 
-const initialJobsState = fromJS({
+export const Action = Record({
+  historicAction: undefined,
+  historicObject: undefined
+});
+
+export const Snapshot = Record({
+  id: undefined,
+  creator: undefined,
+  action: Action(),
+  jobs: Map()
+});
+
+export const initialJobsState = fromJS({
   requestsById: OrderedMap(),
   requestsMounted: OrderedSet(),
   requestsCanceled: Set(),
@@ -30,41 +43,35 @@ const initialJobsState = fromJS({
   }
 });
 
-const sources = (state = Map(), action) => {
-  switch (action.type) {
-    default:
-      return state;
-  }
-};
+const initialSnapshotState = Map({
+  snaps: OrderedMap({
+    HOME: initialJobsState
+  }),
+  present: "HOME"
+});
 
 const createCurrencyRequests = (state, action) => {
   const {
     payload: { requests, batchId }
   } = action;
 
-  const orderedSet = requests.reduce(
+  const newRequestsMounted = requests.reduce(
     (acc, curr) => acc.add(curr.get("id")),
     state.get("requestsMounted")
   );
 
-  const oldRequests = state.get("requestsById");
-
   const newRequests = requests.reduce(
     (acc, curr) => acc.set(curr.get("id"), curr),
-    oldRequests
+    state.get("requestsById")
   );
 
   return state
     .set("requestsById", newRequests)
-    .set("requestsMounted", orderedSet);
-};
-
-const getRequestsMonted = state => {
-  return state.get("requestsMounted", OrderedSet());
+    .set("requestsMounted", newRequestsMounted);
 };
 
 const enqueueRequestData = (state, action) => {
-  const requestsMounted = getRequestsMonted(state);
+  const requestsMounted = state.get("requestsMounted");
   const {
     payload: { requestId, batchId, timeEnqueued }
   } = action;
@@ -103,31 +110,57 @@ const resolveRequestData = (
 
 const clearRequests = state => initialJobsState;
 
-const jobs = (state = initialJobsState, action) => {
+const jobs = (state = initialSnapshotState, action) => {
+  const prevState = state;
+  const prevJobState = getPresentJobsFromJobState(prevState);
+
+  let presentJobState;
   switch (action.type) {
-    // creates a batch of jobs
     case actionTypes.CREATE_REQUESTS:
-      return createCurrencyRequests(state, action);
+      presentJobState = createCurrencyRequests(prevJobState, action);
+      break;
 
-    // takes the create_batch from the channel (supervisor)
-    // supervisor selects and forks a configurable number of workersa
     case actionTypes.ENQUEUE_REQUEST:
-      return enqueueRequestData(state, action);
+      presentJobState = enqueueRequestData(prevJobState, action);
+      break;
 
-    // Worker starts the request
     case actionTypes.START_REQUEST:
-      return beginRequestData(state, action);
+      presentJobState = beginRequestData(prevJobState, action);
+      break;
+
     case actionTypes.COMPLETE_REQUEST:
-      return resolveRequestData(state, action);
+      presentJobState = resolveRequestData(prevJobState, action);
+      break;
 
     case actionTypes.CANCEL_REQUEST:
-      return cancelRequestData(state, action);
+      presentJobState = cancelRequestData(prevJobState, action);
+      break;
 
     case actionTypes.CLEAR_REQUESTS:
-      return clearRequests(state);
+      presentJobState = clearRequests(prevJobState);
+      break;
+
     default:
-      return state;
+      presentJobState = prevJobState;
   }
+
+  const nextSnapId = uuid();
+
+  return presentHasChanged(presentJobState, prevJobState)
+    ? state
+        .setIn(["snaps", nextSnapId], presentJobState)
+        .set("present", nextSnapId)
+    : state;
+};
+
+const presentHasChanged = (present, past) => {
+  const pres = present.get("requestsById");
+  const pastRequests = past.get("requestsById");
+
+  return pres.every(node => {
+    const id = node.get("id");
+    return !past.has(id) || pastRequests.get(id).equals(node);
+  });
 };
 
 const configReducer = (state = fromJS(config), action) => {
@@ -152,7 +185,6 @@ export const reducers = combineReducers({
     }
   }),
   users,
-  sources,
   jobs,
   config: configReducer
 });
