@@ -1,5 +1,5 @@
 import uuid from "uuid-v4";
-import { delay, buffers, channel } from "redux-saga";
+import { delay, buffers, channel, END, eventChannel } from "redux-saga";
 import {
   actionChannel,
   all,
@@ -8,11 +8,17 @@ import {
   put,
   race,
   select,
-  take
+  take,
+  takeLatest
 } from "redux-saga/effects";
 
 import actionTypes from "../../action-types";
-import { getCurrenciesFromConfig, getFiatFromConfig } from "../../selectors";
+import {
+  getCurrenciesFromConfig,
+  getFiatFromConfig,
+  getCanceledJobs,
+  getIsJobCanceled
+} from "../../selectors";
 
 import { createRequestWorkers } from "./sourceWorkers";
 
@@ -29,12 +35,38 @@ export default function* sourceService() {
 
   // take from the failChannel,
   // feed all failed/canceled into retry
-  const failChannel = yield channel(buffers.expanding(20));
+  const unresolvedChannel = yield channel(buffers.expanding(20));
 
   yield all([
-    fork(watchForCreate, createChannel, enqueueChannel)
+    fork(watchForCreate, createChannel, enqueueChannel),
+    takeLatest(actionTypes.CREATE_CHANNEL, watchTimeChannel)
     // fork(watchFailedOrCanceled, failChannel)
   ]);
+}
+
+function makeTimeChannel() {
+  const timeChannel = eventChannel(emitter => {
+    const timeEmitter = setInterval(() => {
+      emitter({ time: new Date() });
+    }, 500);
+    // The subscriber must return an unsubscribe function
+    return () => {
+      timeEmitter();
+    };
+  });
+
+  return { timeChannel };
+}
+
+function* watchTimeChannel() {
+  const { timeChannel } = makeTimeChannel();
+  while (true) {
+    const { time } = yield take(timeChannel);
+    yield put({
+      type: actionTypes.EMIT_TIME,
+      payload: { time }
+    });
+  }
 }
 
 function* watchForCreate(createChannel, enqueueChannel) {
@@ -45,10 +77,18 @@ function* watchForCreate(createChannel, enqueueChannel) {
     const {
       payload: { requests, batchId }
     } = yield take(createChannel);
-    const requestIds = requests
+
+    const onlyIds = requests
       .map(i => i.get("id"))
       .toList()
       .toJS();
+
+    const canceledJobs = yield select(getCanceledJobs);
+    const requestIds = onlyIds.filter(
+      requestId => !canceledJobs.has(requestId)
+    );
+
+    // before enqueuing, make sure that it hasn't been canceled yet
 
     // batchId -> [1,2,3,4,5]
     const batchTask = yield fork(createRequestWorkers, {
@@ -57,39 +97,60 @@ function* watchForCreate(createChannel, enqueueChannel) {
       batchId
     });
 
-    const watchTask = yield fork(watchForBatchResolved, {
-      requestIds,
-      batchId
-    });
+    const watchTask = yield fork(
+      watchForBatchResolved,
+      {
+        requestIds,
+        batchId
+      },
+      doneChannel
+    );
 
     // Put each in a channel for workers to consume
-    yield requestIds.map(request =>
-      put({
+    for (let i = 0; i < requestIds.length; i++) {
+      const requestId = requestIds[i];
+      const isCanceled = yield select(getIsJobCanceled, requestId);
+
+      if (isCanceled) {
+        yield put(doneChannel, { requestId });
+        continue;
+      }
+
+      yield put({
         type: actionTypes.ENQUEUE_REQUEST,
         payload: {
-          requestId: request,
+          requestId: requestId,
           batchId,
           timeEnqueued: new Date()
         }
-      })
-    );
+      });
 
-    // how do we know when we're done?
-    yield take(actionTypes.BATCH_RESOLVED);
+      yield call(delay, 500);
+    }
+
+    const { pause, resolved, cancel } = yield race({
+      pause: take(actionTypes.PAUSE),
+      resolved: take(actionTypes.COMPLETE_BATCH),
+      cancel: take(actionTypes.CANCEL_BATCH)
+    });
+
+    if (pause) {
+      yield take(actionTypes.START_AGAIN);
+    }
   }
 }
 
 // When a job is started
-function* watchForBatchResolved({ requestIds, batchId }) {
+function* watchForBatchResolved({ requestIds, batchId }, doneChannel) {
   const numToBeResolved = requestIds.length;
   let numResolved = 0;
 
   while (numResolved < numToBeResolved) {
-    yield take(actionTypes.COMPLETE_REQUEST);
+    const done = yield take(doneChannel);
     numResolved++;
   }
 
   yield put({
-    type: actionTypes.BATCH_RESOLVED
+    type: actionTypes.COMPLETE_BATCH
   });
 }

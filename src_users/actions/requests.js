@@ -38,3 +38,6 @@ export const startRequests = () => (dispatch, getState) => {
     payload: { requests, batchId }
   });
 };
+
+export const startTimeChannel = createAction(actionTypes.CREATE_CHANNEL);
+export const clearRequests = createAction(actionTypes.CLEAR_REQUESTS);

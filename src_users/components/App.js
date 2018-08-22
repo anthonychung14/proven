@@ -25,8 +25,8 @@ export class App extends React.Component {
 
     // render
     return (
-      <div className="container">
-        <div className="footer">
+      <div className="container" style={{ width: "95%" }}>
+        <div className="header">
           <img src="/media/logo.svg" />
           <span>
             <strong className="mfga">MFGA</strong>

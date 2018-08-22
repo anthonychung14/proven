@@ -13,3 +13,9 @@ export const getReqJobById = (state, id) =>
 export const getRequestsMounted = createSelector([getJobs], jobs =>
   jobs.get("requestsMounted", Set())
 );
+
+export const getCanceledJobs = createSelector([getJobs], jobs =>
+  jobs.get("requestsCanceled", Set())
+);
+
+export const getIsJobCanceled = (state, id) => getCanceledJobs(state).has(id);

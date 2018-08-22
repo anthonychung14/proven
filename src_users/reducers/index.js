@@ -1,5 +1,6 @@
 import { OrderedMap, Map, OrderedSet, fromJS, Set } from "immutable";
 import uuid from "uuid-v4";
+import Ring from "ringjs";
 
 import { combineReducers } from "redux";
 import { routerReducer } from "react-router-redux";
@@ -20,7 +21,13 @@ import { startRequest, resolveRequest, failRequest } from "./currencyRequests";
 const initialJobsState = fromJS({
   requestsById: OrderedMap(),
   requestsMounted: OrderedSet(),
-  requestsCanceled: Set()
+  requestsCanceled: Set(),
+  timeSeries: {
+    time: new Date(),
+    events: new Ring(200),
+    percentile50Out: new Ring(100),
+    percentile90Out: new Ring(100)
+  }
 });
 
 const sources = (state = Map(), action) => {
@@ -94,6 +101,8 @@ const resolveRequestData = (
     .setIn(["requestsById", id, "value"], price);
 };
 
+const clearRequests = state => initialJobsState;
+
 const jobs = (state = initialJobsState, action) => {
   switch (action.type) {
     // creates a batch of jobs
@@ -114,6 +123,8 @@ const jobs = (state = initialJobsState, action) => {
     case actionTypes.CANCEL_REQUEST:
       return cancelRequestData(state, action);
 
+    case actionTypes.CLEAR_REQUESTS:
+      return clearRequests(state);
     default:
       return state;
   }

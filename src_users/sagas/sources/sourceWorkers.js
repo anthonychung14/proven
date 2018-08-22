@@ -9,14 +9,15 @@ import { fromJS } from "immutable";
 
 import { getResource } from "../../api/util";
 import actionTypes from "../../action-types";
-import { getReqJobById } from "../../selectors";
+import { getReqJobById, getConfig, getIsJobCanceled } from "../../selectors";
 
 export function* createRequestWorkers({
   enqueueChannel,
   doneChannel,
   batchId
 }) {
-  const numWorkers = 3;
+  const config = yield select(getConfig);
+  const numWorkers = config.get("numWorkers");
   const workers = [];
 
   for (let i = 0; i < numWorkers; ++i) {
@@ -41,9 +42,15 @@ export function* createWorker(
 ) {
   while (true) {
     const { payload } = yield take(enqueueChannel);
-    yield call(delay, 600);
-
+    yield call(delay, 1000);
     const { requestId, batchId } = payload;
+
+    if (yield select(getIsJobCanceled, requestId)) {
+      console.log("canceled job");
+      yield put(doneChannel, { requestId, batchId });
+      continue;
+    }
+
     const { task, cancelJob } = yield race({
       task: call(fetchCryptoTask, { requestId, batchId }),
       cancelJob: take(isCancellable(requestId))
@@ -62,6 +69,8 @@ export function* createWorker(
     }
 
     if (cancelJob) {
+      console.log("job is canceled");
+      yield put(doneChannel, payload);
     }
   }
 }
@@ -88,65 +97,3 @@ export function* fetchCryptoTask({ requestId, batchId }) {
     return res;
   }
 }
-
-// export function* createSourceWorkers(
-//   sourceChannel,
-//   doneChannel,
-//   jobId,
-//   folderId
-// ) {
-//   const numWorkers = 5;
-//   const workers = [];
-
-//   for (let i = 0; i < numWorkers; ++i) {
-//     workers[i] = yield fork(
-//       workWorkWork,
-//       sourceChannel,
-//       i,
-//       doneChannel,
-//       folderId
-//     );
-//   }
-// }
-
-// export function* workWorkWork(
-//   sourceChannel,
-//   workerIndex,
-//   doneChannel,
-//   folderId
-// ) {
-//   while (true) {
-//     const sourceData = yield take(sourceChannel);
-//     const { id } = sourceData;
-
-//     yield fork(
-//       uploadJob,
-//       { id, formData, assemblyStr, structuralNodeIds, mediaType, jobId },
-//       workerIndex
-//     );
-
-//     const action = yield take(({ type, meta = {} }) => {
-//       const {
-//         workerIndex: currWorkerIndex = null,
-//         jobId: currJobId = null
-//       } = meta;
-//       // subscribe to worker message that upload failed
-//       return (
-//         (type === actionTypes.COMPLETE || type === actionTypes.ERROR) &&
-//         currWorkerIndex === workerIndex &&
-//         currJobId === jobId
-//       );
-//     });
-
-//     if (action.type === actionTypes.ERROR) {
-//       yield put({
-//         type: actionTypes.ERROR,
-//         payload: { ...uploadData },
-//         meta: { jobId, id, folderId }
-//       });
-//     }
-
-//     const { payload, meta } = action;
-//     yield put(doneChannel, { payload, meta });
-//   }
-// }

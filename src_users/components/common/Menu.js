@@ -3,7 +3,11 @@ import { connect } from "react-redux";
 import { Nav, NavItem, Glyphicon, Button, ButtonGroup } from "react-bootstrap";
 import { IndexLinkContainer, LinkContainer } from "react-router-bootstrap";
 
-import { startRequests } from "../../actions/requests";
+import {
+  startRequests,
+  startTimeChannel,
+  clearRequests
+} from "../../actions/requests";
 
 // Menu component
 class Menu extends React.Component {
@@ -32,6 +36,16 @@ class Menu extends React.Component {
             bsStyle="info"
             bsSize="small"
             onClick={() => {
+              this.props.clearRequests();
+            }}
+          >
+            Clear Requests
+          </Button>
+          <Button
+            bsStyle="info"
+            bsSize="small"
+            disabled
+            onClick={() => {
               this.props.startRequests();
             }}
           >
@@ -40,13 +54,41 @@ class Menu extends React.Component {
           <Button
             bsStyle="info"
             bsSize="small"
+            disabled
             onClick={() => {
               this.props.startRequests();
             }}
           >
             Start Chaos
           </Button>
+          <Button
+            bsStyle="info"
+            bsSize="small"
+            onClick={() => {
+              this.props.startTimeChannel();
+            }}
+          >
+            Start TimeChannel
+          </Button>
         </ButtonGroup>
+      </div>
+    );
+  }
+}
+
+export default connect(
+  null,
+  { startRequests, startTimeChannel, clearRequests }
+)(Menu);
+
+/* 
+<LinkContainer to="/user-edit">
+          <NavItem>
+            Add User <Glyphicon glyph="plus-sign" />
+          </NavItem>
+        </LinkContainer>
+
+
         <div style={{ display: "flex" }}>
           <Nav bsStyle="pills">
             <IndexLinkContainer to="/">
@@ -64,20 +106,4 @@ class Menu extends React.Component {
             </IndexLinkContainer>
           </Nav>
         </div>
-      </div>
-    );
-  }
-}
-
-export default connect(
-  null,
-  { startRequests }
-)(Menu);
-
-/* 
-<LinkContainer to="/user-edit">
-          <NavItem>
-            Add User <Glyphicon glyph="plus-sign" />
-          </NavItem>
-        </LinkContainer>
 */

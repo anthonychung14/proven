@@ -24,6 +24,19 @@ class CurrencyListElement extends React.Component {
     }
   }
 
+  getBackgroundColor(status) {
+    const map = {
+      CREATED: { backgroundColor: "#65F6FF" },
+      ENQUEUED: { backgroundColor: "#7CE8C8" },
+      COMPLETE: { backgroundColor: "#DFECD7" },
+      STARTED: { backgroundColor: "#BABBFF" },
+      ERROR: { backgroundColor: "#DFECD7" },
+      CANCELLED: { backgroundColor: "#FFFE7C" }
+    };
+
+    return map[status] || {};
+  }
+
   // render
   render() {
     const {
@@ -37,29 +50,35 @@ class CurrencyListElement extends React.Component {
       symbol,
       value
     } = this.props;
+
+    const { getBackgroundColor } = this;
+
     return (
       <tr>
         <td>#{id.substring(0, 4)}</td>
         <td>{symbol}</td>
-        <td>{value || 0}</td>
-        <td>{fiat}</td>
-        <td
-        >{`${timeEnqueued.getHours()}: ${timeEnqueued.getMinutes()}: ${timeEnqueued.getSeconds()}`}</td>
         <td>
-          {timeStarted
+          {timeEnqueued
+            ? `${timeEnqueued.getHours()}:${timeEnqueued.getMinutes()}.${timeEnqueued.getSeconds()}`
+            : "..."}
+        </td>
+        <td>
+          {timeStarted && timeEnqueued
             ? ((timeStarted.getTime() - timeEnqueued.getTime()) / 1000).toFixed(
                 2
               )
             : "..."}
         </td>
         <td>
-          {timeComplete
+          {timeComplete && timeStarted
             ? ((timeComplete.getTime() - timeStarted.getTime()) / 1000).toFixed(
                 2
               )
             : "..."}
         </td>
-        <td>{status}</td>
+        <td>{fiat}</td>
+        <td>{value || 0}</td>
+        <td style={{ ...getBackgroundColor(status) }}>{status}</td>
         <td>
           <Button
             bsSize="xsmall"

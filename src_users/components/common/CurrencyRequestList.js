@@ -29,28 +29,26 @@ class CurrencyRequestList extends React.Component {
   // render
   render() {
     // pagination
-    const { currencyRequests, page, numRequests, numEvents } = this.props;
+    const { currencyRequests, page } = this.props;
     const per_page = 10;
     const pages = Math.ceil(currencyRequests.length / per_page);
     const start_offset = (page - 1) * per_page;
     let start_count = 0;
 
-    const percent = parseInt((numEvents / numRequests) * 100);
-    // show the list of users
     return (
       <div>
         <Table bordered hover responsive striped>
           <thead>
             <tr>
               <th>ID</th>
-              <th>SYMBOL</th>
-              <th>PRICE</th>
-              <th>FIAT</th>
-              <th>ENQUEUE</th>
-              <th>STARTED</th>
-              <th>RESOLVED</th>
-              <th>STATUS</th>
-              <th>CANCEL</th>
+              <th>Symbol</th>
+              <th>Enqueued at</th>
+              <th>Time Start</th>
+              <th>Time Complete</th>
+              <th>Currency</th>
+              <th>Price</th>
+              <th>Status</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -123,8 +121,6 @@ class CurrencyRequestList extends React.Component {
 function mapStateToProps(state) {
   return {
     currencyRequests: getRequestsById(state),
-    numEvents: 0,
-    numRequests: 10,
 
     // https://github.com/reactjs/react-router-redux#how-do-i-access-router-state-in-a-container-component
     // react-router-redux wants you to get the url data by passing the props through a million components instead of

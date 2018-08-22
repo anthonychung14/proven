@@ -1,6 +1,10 @@
-import * as firebase from "firebase";
+var firebase = require("firebase/app");
+
+require("firebase/auth");
+require("firebase/database");
 
 import { FirebaseConfig } from "../config/keys";
+
 firebase.initializeApp(FirebaseConfig);
 
 const databaseRef = firebase.database().ref();
