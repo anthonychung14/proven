@@ -8,7 +8,6 @@ import { reducer as formReducer } from "redux-form";
 
 import config from "../config/currency-config";
 import { getTime } from "../util";
-
 import actionTypes from "../action-types";
 
 import {
@@ -17,6 +16,47 @@ import {
   getPresentJobsFromJobState,
   getReqJobById
 } from "../selectors";
+
+export const Action = Record({
+  historicAction: undefined,
+  historicObject: undefined
+});
+
+const Snapshot = Record({
+  id: undefined,
+  creator: undefined,
+  action: Action(),
+  jobs: Map()
+});
+
+const initialJobsState = fromJS({
+  requestsById: OrderedMap(),
+  requestsMounted: OrderedSet(),
+  requestsCanceled: Set(),
+  timeSeries: {
+    time: new Date(),
+    events: new Ring(200),
+    percentile50Out: new Ring(100),
+    percentile90Out: new Ring(100)
+  }
+});
+
+const initialSnapshotState = Map({
+  snaps: OrderedMap({
+    HOME: initialJobsState
+  }),
+  present: "HOME"
+});
+
+const presentHasChanged = (present, past) => {
+  const pres = present.get("requestsById");
+  const pastRequests = past.get("requestsById");
+
+  return pres.every(node => {
+    const id = node.get("id");
+    return !past.has(id) || pastRequests.get(id).equals(node);
+  });
+};
 
 export const createCurrencyRequests = (state, action) => {
   const {

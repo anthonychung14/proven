@@ -23,32 +23,6 @@ export const Action = Record({
   historicObject: undefined
 });
 
-export const Snapshot = Record({
-  id: undefined,
-  creator: undefined,
-  action: Action(),
-  jobs: Map()
-});
-
-export const initialJobsState = fromJS({
-  requestsById: OrderedMap(),
-  requestsMounted: OrderedSet(),
-  requestsCanceled: Set(),
-  timeSeries: {
-    time: new Date(),
-    events: new Ring(200),
-    percentile50Out: new Ring(100),
-    percentile90Out: new Ring(100)
-  }
-});
-
-const initialSnapshotState = Map({
-  snaps: OrderedMap({
-    HOME: initialJobsState
-  }),
-  present: "HOME"
-});
-
 const presentHasChanged = (present, past) => {
   const pres = present.get("requestsById");
   const pastRequests = past.get("requestsById");
@@ -73,22 +47,22 @@ const configReducer = (state = fromJS(config), action) => {
   }
 };
 
-const rootReducers = {
-  routing: routerReducer,
-  form: formReducer.plugin({
-    user_edit: (state, action) => {
-      // reset form (wipe state) when navigating away from the User edit page
-      switch (action.type) {
-        case "@@router/LOCATION_CHANGE":
-          return undefined;
-        default:
-          return state;
-      }
-    }
-  }),
-  jobs: requestReducer,
-  config: configReducer
-};
+// const rootReducers = {
+//   routing: routerReducer,
+//   form: formReducer.plugin({
+//     user_edit: (state, action) => {
+//       // reset form (wipe state) when navigating away from the User edit page
+//       switch (action.type) {
+//         case "@@router/LOCATION_CHANGE":
+//           return undefined;
+//         default:
+//           return state;
+//       }
+//     }
+//   }),
+//   jobs: requestReducer,
+//   config: configReducer
+// };
 
 // reducers need to be split from original state
 export const reducers = combineReducers({
