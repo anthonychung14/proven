@@ -4,16 +4,14 @@ import { Nav, NavItem, Glyphicon, Button, ButtonGroup } from "react-bootstrap";
 import { IndexLinkContainer, LinkContainer } from "react-router-bootstrap";
 
 import {
+  addWorker,
   clearRequests,
   startRequests,
   startTimeChannel,
   stopTime
 } from "../../actions/requests";
 
-// Menu component
 class Menu extends React.Component {
-  // render
-
   render() {
     return (
       <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -45,9 +43,8 @@ class Menu extends React.Component {
           <Button
             bsStyle="info"
             bsSize="small"
-            disabled
             onClick={() => {
-              this.props.startRequests();
+              this.props.addWorker();
             }}
           >
             Increment Workers
@@ -88,7 +85,7 @@ class Menu extends React.Component {
 
 export default connect(
   null,
-  { startRequests, startTimeChannel, clearRequests, stopTime }
+  { addWorker, startRequests, startTimeChannel, clearRequests, stopTime }
 )(Menu);
 
 /* 

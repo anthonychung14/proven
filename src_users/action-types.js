@@ -1,4 +1,5 @@
 const actionTypes = Object.freeze({
+  ADD_WORKER: "ADD_WORKER",
   BEGIN_REQUEST: "BEGIN_REQUEST",
 
   CANCEL_BATCH: "CANCEL_BATCH",

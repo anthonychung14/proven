@@ -1,0 +1,124 @@
+import { OrderedMap, Map, OrderedSet, fromJS, Set, Record } from "immutable";
+import uuid from "uuid-v4";
+import Ring from "ringjs";
+
+import { combineReducers } from "redux";
+import { routerReducer } from "react-router-redux";
+import { reducer as formReducer } from "redux-form";
+
+import config from "../config/currency-config";
+import { getTime } from "../util";
+
+import actionTypes from "../action-types";
+
+import {
+  getCurrenciesFromConfig,
+  getFiatFromConfig,
+  getPresentJobsFromJobState,
+  getReqJobById
+} from "../selectors";
+
+export const createCurrencyRequests = (state, action) => {
+  const {
+    payload: { requests, batchId }
+  } = action;
+
+  const newRequestsMounted = requests.reduce(
+    (acc, curr) => acc.add(curr.get("id")),
+    state.get("requestsMounted")
+  );
+
+  const newRequests = requests.reduce(
+    (acc, curr) => acc.set(curr.get("id"), curr),
+    state.get("requestsById")
+  );
+
+  return state
+    .set("requestsById", newRequests)
+    .set("requestsMounted", newRequestsMounted);
+};
+
+export const enqueueRequestData = (state, action) => {
+  const requestsMounted = state.get("requestsMounted");
+  const {
+    payload: { requestId, batchId, timeEnqueued }
+  } = action;
+
+  return state
+    .set("requestsMounted", requestsMounted.add(requestId))
+    .set("batchProcessing", batchId)
+    .setIn(["requestsById", requestId, "timeEnqueued"], timeEnqueued)
+    .setIn(["requestsById", requestId, "status"], "ENQUEUED");
+};
+
+export const beginRequestData = (state, { payload: { id, timeStarted } }) => {
+  return state
+    .setIn(["requestsById", id, "timeStarted"], timeStarted)
+    .setIn(["requestsById", id, "status"], "STARTED");
+};
+
+export const cancelRequestData = (state, { payload }) => {
+  return state
+    .setIn(["requestsById", payload, "timeComplete"], new Date())
+    .setIn(["requestsById", payload, "status"], "CANCELLED")
+    .set("requestsCanceled", state.get("requestsCanceled").add(payload));
+};
+
+export const resolveRequestData = (
+  state,
+  { payload: { id, timeComplete, price } }
+) => {
+  const request = state.getIn(["requestsById", id]);
+
+  return state
+    .setIn(["requestsById", id, "timeComplete"], timeComplete)
+    .setIn(["requestsById", id, "status"], "COMPLETE")
+    .setIn(["requestsById", id, "value"], price);
+};
+
+export const clearRequests = state => initialJobsState;
+
+const requests = (state = initialSnapshotState, action) => {
+  const prevState = state;
+  const prevJobState = getPresentJobsFromJobState(prevState);
+
+  let presentJobState;
+  switch (action.type) {
+    case actionTypes.CREATE_REQUESTS:
+      presentJobState = createCurrencyRequests(prevJobState, action);
+      break;
+
+    case actionTypes.ENQUEUE_REQUEST:
+      presentJobState = enqueueRequestData(prevJobState, action);
+      break;
+
+    case actionTypes.START_REQUEST:
+      presentJobState = beginRequestData(prevJobState, action);
+      break;
+
+    case actionTypes.COMPLETE_REQUEST:
+      presentJobState = resolveRequestData(prevJobState, action);
+      break;
+
+    case actionTypes.CANCEL_REQUEST:
+      presentJobState = cancelRequestData(prevJobState, action);
+      break;
+
+    case actionTypes.CLEAR_REQUESTS:
+      presentJobState = clearRequests(prevJobState);
+      break;
+
+    default:
+      presentJobState = prevJobState;
+  }
+
+  const nextSnapId = uuid();
+
+  return presentHasChanged(presentJobState, prevJobState)
+    ? state
+        .setIn(["snaps", nextSnapId], presentJobState)
+        .set("present", nextSnapId)
+    : state;
+};
+
+export default requests;

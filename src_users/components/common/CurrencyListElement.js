@@ -16,14 +16,7 @@ import actionTypes from "../../action-types";
 import { getTime } from "../../util";
 import { getReqJobById, getRequestsMounted } from "../../selectors";
 
-// User List Element component
 class CurrencyListElement extends React.Component {
-  // componentWillMount() {
-  //   if (!this.props.inProcess) {
-  //     this.props.makeRequest(this.props.id);
-  //   }
-  // }
-
   getBackgroundColor(status) {
     const map = {
       CREATED: { backgroundColor: "#65F6FF" },
@@ -37,7 +30,6 @@ class CurrencyListElement extends React.Component {
     return map[status] || {};
   }
 
-  // render
   render() {
     const {
       handleClickCancel,
@@ -50,8 +42,6 @@ class CurrencyListElement extends React.Component {
       symbol,
       value
     } = this.props;
-
-    const { getBackgroundColor } = this;
 
     return (
       <tr>
@@ -78,7 +68,7 @@ class CurrencyListElement extends React.Component {
         </td>
         <td>{fiat}</td>
         <td>{value || 0}</td>
-        <td style={{ ...getBackgroundColor(status) }}>{status}</td>
+        <td style={{ ...this.getBackgroundColor(status) }}>{status}</td>
         <td>
           <Button
             bsSize="xsmall"
@@ -94,15 +84,10 @@ class CurrencyListElement extends React.Component {
   }
 }
 
-const getHasBeenMounted = (state, id) => {
-  if (getReqJobById) return getRequestsMounted(state).has(id);
-};
-
 export default compose(
   connect(
     (state, { currencyRequestId }) => ({
-      currencyRequest: getReqJobById(state, currencyRequestId),
-      inProcess: getHasBeenMounted(state, currencyRequestId)
+      currencyRequest: getReqJobById(state, currencyRequestId)
     }),
     {
       cancelRequest: createAction(actionTypes.CANCEL_REQUEST)
