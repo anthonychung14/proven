@@ -29,7 +29,7 @@ const Snapshot = Record({
   jobs: Map()
 });
 
-const initialJobsState = fromJS({
+export const initialJobsState = fromJS({
   requestsById: OrderedMap(),
   requestsMounted: OrderedSet(),
   requestsCanceled: Set(),
@@ -116,7 +116,14 @@ export const resolveRequestData = (
     .setIn(["requestsById", id, "value"], price);
 };
 
-export const clearRequests = state => initialJobsState;
+export const clearRequests = state => initialSnapshotState;
+
+const messilyJumpOverTime = (state, action) => {
+  // we expect to change the present key
+  // as a result, the selectors will update the job map
+  const snaps = state.get("snaps");
+  return state.set("present", snaps.keySeq().get(action.payload));
+};
 
 const requests = (state = initialSnapshotState, action) => {
   const prevState = state;
@@ -145,11 +152,13 @@ const requests = (state = initialSnapshotState, action) => {
       break;
 
     case actionTypes.CLEAR_REQUESTS:
-      presentJobState = clearRequests(prevJobState);
-      break;
+      return clearRequests(prevJobState);
+
+    case actionTypes.TIME_JUMP:
+      return messilyJumpOverTime(prevState, action);
 
     default:
-      presentJobState = prevJobState;
+      return prevState;
   }
 
   const nextSnapId = uuid();

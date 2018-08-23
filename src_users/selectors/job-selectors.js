@@ -2,7 +2,7 @@ import { createSelector } from "reselect";
 import { Map, Set, fromJS, OrderedMap, OrderedSet } from "immutable";
 import Ring from "ringjs";
 
-import { initialJobsState } from "../reducers";
+import { initialJobsState } from "../reducers/requests";
 
 export const getJobs = state => state.jobs;
 
@@ -37,8 +37,13 @@ export const getPresentKey = createSelector(
 );
 
 export const getPresentJobs = createSelector(
-  [getJobs],
-  getPresentJobsFromJobState
+  [getSnaps, getPresentKey],
+  (snaps, presentKey) => snaps.get(presentKey)
+);
+
+export const getPresentIndex = createSelector(
+  [getSnaps, getPresentKey],
+  (snaps, presentKey) => snaps.keySeq().indexOf(presentKey)
 );
 
 export const getRequestsById = createSelector(

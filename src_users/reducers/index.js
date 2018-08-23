@@ -18,24 +18,9 @@ import {
 import actionTypes from "../action-types";
 import requestReducer from "./requests";
 
-export const Action = Record({
-  historicAction: undefined,
-  historicObject: undefined
-});
-
-const presentHasChanged = (present, past) => {
-  const pres = present.get("requestsById");
-  const pastRequests = past.get("requestsById");
-
-  return pres.every(node => {
-    const id = node.get("id");
-    return !past.has(id) || pastRequests.get(id).equals(node);
-  });
-};
-
 const addWorker = state => {
   const next = state.get("numWorkers") + 1;
-  return next < 4 ? state.set("numWorkers", next) : 4;
+  return next <= 4 ? state.set("numWorkers", next) : state;
 };
 
 const configReducer = (state = fromJS(config), action) => {
@@ -46,23 +31,6 @@ const configReducer = (state = fromJS(config), action) => {
       return state;
   }
 };
-
-// const rootReducers = {
-//   routing: routerReducer,
-//   form: formReducer.plugin({
-//     user_edit: (state, action) => {
-//       // reset form (wipe state) when navigating away from the User edit page
-//       switch (action.type) {
-//         case "@@router/LOCATION_CHANGE":
-//           return undefined;
-//         default:
-//           return state;
-//       }
-//     }
-//   }),
-//   jobs: requestReducer,
-//   config: configReducer
-// };
 
 // reducers need to be split from original state
 export const reducers = combineReducers({

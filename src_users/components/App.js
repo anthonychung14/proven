@@ -4,7 +4,6 @@ import { ProgressBar } from "react-bootstrap";
 import Menu from "./common/Menu";
 
 import { fetchUser } from "../actions/questions";
-import { getPresentJobs } from "../selectors";
 import "../stylesheets/main.scss";
 
 import TimeTravel from "./common/TimeTravel";
@@ -54,9 +53,7 @@ export class App extends React.Component {
 
 // export the connected class
 function mapStateToProps(state) {
-  return {
-    jobs: getPresentJobs(state)
-  };
+  return {};
 }
 
 export default connect(mapStateToProps)(App);

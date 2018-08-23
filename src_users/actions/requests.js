@@ -43,3 +43,4 @@ export const startTimeChannel = createAction(actionTypes.CREATE_CHANNEL);
 export const clearRequests = createAction(actionTypes.CLEAR_REQUESTS);
 export const stopTime = createAction(actionTypes.PAUSE);
 export const addWorker = createAction(actionTypes.ADD_WORKER);
+export const timeJump = createAction(actionTypes.TIME_JUMP);

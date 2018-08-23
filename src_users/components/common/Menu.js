@@ -68,15 +68,6 @@ class Menu extends React.Component {
           >
             Start TimeChannel
           </Button>
-          <Button
-            bsStyle="info"
-            bsSize="small"
-            onClick={() => {
-              this.props.stopTime();
-            }}
-          >
-            Pause
-          </Button>
         </ButtonGroup>
       </div>
     );

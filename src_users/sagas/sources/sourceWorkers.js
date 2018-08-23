@@ -18,6 +18,7 @@ export function* createRequestWorkers({
 }) {
   const config = yield select(getConfig);
   const numWorkers = config.get("numWorkers");
+  console.log(numWorkers, "how many to do?");
   const workers = [];
 
   for (let i = 0; i < numWorkers; ++i) {
@@ -46,7 +47,6 @@ export function* createWorker(
     const { requestId, batchId } = payload;
 
     if (yield select(getIsJobCanceled, requestId)) {
-      console.log("canceled job");
       yield put(doneChannel, { requestId, batchId });
       continue;
     }

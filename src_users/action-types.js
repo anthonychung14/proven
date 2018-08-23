@@ -22,6 +22,7 @@ const actionTypes = Object.freeze({
 
   START_AGAIN: "START_AGAIN",
   START_REQUEST: "START_REQUEST",
+  TIME_JUMP: "TIME_JUMP",
 
   WARN: "WARN"
 });
