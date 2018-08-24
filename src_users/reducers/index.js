@@ -24,6 +24,8 @@ const addWorker = state => {
 };
 
 const toggleChaos = state => state.set("chaos", !state.get("chaos"));
+const toggleTime = state => state.set("time", !state.get("time"));
+const toggleTrack = state => state.set("track", !state.get("track"));
 
 const configReducer = (state = fromJS(config), action) => {
   switch (action.type) {
@@ -31,6 +33,10 @@ const configReducer = (state = fromJS(config), action) => {
       return addWorker(state);
     case actionTypes.START_CHAOS:
       return toggleChaos(state);
+    case actionTypes.TOGGLE_TIME:
+      return toggleTime(state);
+    case actionTypes.TOGGLE_TRACK:
+      return toggleTrack(state);
     default:
       return state;
   }

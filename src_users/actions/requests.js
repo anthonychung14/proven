@@ -75,3 +75,5 @@ export const timeRequest = createAction(actionTypes.TIME_REQUEST);
 export const cancelRequest = createAction(actionTypes.CANCEL_REQUEST);
 export const startChaos = createAction(actionTypes.START_CHAOS);
 export const retryRequest = createAction(actionTypes.RETRY_REQUEST);
+export const toggleTime = createAction(actionTypes.TOGGLE_TIME);
+export const toggleTrack = createAction(actionTypes.TOGGLE_TRACK);

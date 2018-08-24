@@ -5,7 +5,9 @@ const config = Object.freeze({
   fiats: ["USD", "JPY", "EUR"],
   id: "A0",
   numWorkers: 1,
-  user_id: "A1"
+  user_id: "A1",
+  timeTravel: false,
+  track: false
 });
 
 export default config;

@@ -9,7 +9,9 @@ import {
   startChaos,
   startRequests,
   startTimeChannel,
-  stopTime
+  stopTime,
+  toggleTimeTravel,
+  toggleTrack
 } from "../../actions/requests";
 
 // I bet these buttons can be turned into enhancers
@@ -113,11 +115,21 @@ class Menu extends React.Component {
             bsStyle="info"
             style={{ padding: "5px" }}
             onClick={() => {
-              this.props.addWorker();
+              this.props.toggleTimeTravel();
             }}
           >
-            <Glyphicon glyph={"wrench"} />
-            WORKER
+            <Glyphicon glyph={"time"} />
+            TIME
+          </Button>
+          <Button
+            bsStyle="info"
+            style={{ padding: "5px" }}
+            onClick={() => {
+              this.props.toggleTrack();
+            }}
+          >
+            <Glyphicon glyph={"signal"} />
+            TRACK
           </Button>
           <Button
             bsStyle="info"
