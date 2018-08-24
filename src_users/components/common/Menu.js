@@ -115,6 +115,16 @@ class Menu extends React.Component {
             bsStyle="info"
             style={{ padding: "5px" }}
             onClick={() => {
+              this.props.addWorker();
+            }}
+          >
+            <Glyphicon glyph={"wrench"} />
+            WORKER
+          </Button>
+          <Button
+            bsStyle="info"
+            style={{ padding: "5px" }}
+            onClick={() => {
               this.props.toggleTime();
             }}
           >
