@@ -12,11 +12,9 @@ import {
   stopTime
 } from "../../actions/requests";
 
-class Menu extends React.Component {
-  render() {
-    return (
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <ButtonGroup
+// I bet these buttons can be turned into enhancers
+/*
+<ButtonGroup
           style={{
             justifyContent: "center",
             alignItems: "center",
@@ -69,6 +67,76 @@ class Menu extends React.Component {
             Start TimeChannel
           </Button>
         </ButtonGroup>
+*/
+class Menu extends React.Component {
+  render() {
+    return (
+      <div
+        style={{
+          display: "flex",
+          flex: 1,
+          paddingBottom: "15px"
+        }}
+      >
+        <ButtonGroup
+          style={{
+            justifyContent: "space-around",
+            alignItems: "center",
+            display: "flex",
+            width: "100%"
+          }}
+        >
+          <Button
+            bsStyle="info"
+            style={{ padding: "5px" }}
+            onClick={() => {
+              this.props.startRequests();
+            }}
+          >
+            <Glyphicon glyph={"plus"} />
+            CREATE
+          </Button>
+          <Button
+            bsStyle="info"
+            style={{ padding: "5px" }}
+            onClick={() => {
+              this.props.clearRequests();
+            }}
+          >
+            <Glyphicon glyph={"remove"} />
+            CLEAR
+          </Button>
+          <Button
+            bsStyle="info"
+            style={{ padding: "5px" }}
+            onClick={() => {
+              this.props.addWorker();
+            }}
+          >
+            <Glyphicon glyph={"wrench"} />
+            WORKER
+          </Button>
+          <Button
+            bsStyle="info"
+            style={{ padding: "5px" }}
+            onClick={() => {
+              this.props.startChaos();
+            }}
+          >
+            <Glyphicon glyph={"fire"} />
+            CHAOS
+          </Button>
+          <Button
+            bsStyle="info"
+            style={{ padding: "5px" }}
+            onClick={() => {
+              this.props.startTimeChannel();
+            }}
+          >
+            <Glyphicon glyph={"flash"} />
+            REAL-TIME
+          </Button>
+        </ButtonGroup>
       </div>
     );
   }
@@ -95,16 +163,7 @@ export default connect(
 
 
         <div style={{ display: "flex" }}>
-          <Nav bsStyle="pills">
-            <IndexLinkContainer to="/">
-              <NavItem>Home</NavItem>
-            </IndexLinkContainer>
-          </Nav>
-          <Nav bsStyle="pills">
-            <IndexLinkContainer to="/questions">
-              <NavItem>Questions</NavItem>
-            </IndexLinkContainer>
-          </Nav>
+          
           <Nav bsStyle="pills">
             <IndexLinkContainer to="/ask">
               <NavItem>Ask</NavItem>

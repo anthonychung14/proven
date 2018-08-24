@@ -23,7 +23,7 @@ import { mapSnapsAndIndex } from "../mapState";
 
 const mapCompleteAndTotal = state => ({ ...getCompletePercentStats(state) });
 
-const SliderProgress = ({ denom, header, numerator, errors, cancel }) => (
+const SliderProgress = ({ denom, total, numerator, errors, cancel }) => (
   <div
     style={{
       display: "flex",
@@ -36,7 +36,9 @@ const SliderProgress = ({ denom, header, numerator, errors, cancel }) => (
       width: "100%"
     }}
   >
-    <h5>{header}</h5>
+    <h4 style={{ padding: "10px", margin: "5px" }}>
+      {total ? `${total} total` : "Waiting"}
+    </h4>
     <ProgressBar
       style={{
         display: "flex",
@@ -62,7 +64,7 @@ const SliderProgress = ({ denom, header, numerator, errors, cancel }) => (
       {cancel ? (
         <ProgressBar
           now={cancel - 0.5}
-          label={`${cancel}% Canceled`}
+          label={`${cancel}% canceled`}
           bsStyle="warning"
           id="last"
         />

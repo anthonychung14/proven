@@ -22,18 +22,12 @@ export const getPresentJobsFromJobState = createSelector(
   (snaps, key) => snaps.get(key)
 );
 
-export const getPresentRequestsById = createSelector(
-  [getPresentJobsFromJobState],
-  jobs => jobs.get("requestsById", Map())
-);
-
 export const getSnaps = createSelector([getJobs], getSnapsFromJobState);
 export const getPresentKey = createSelector(
   [getJobs],
   getPresentKeyFromJobState
 );
 
-// don't think this works :l
 export const getPresentJobs = createSelector(
   [getSnaps, getPresentKey],
   (snaps, presentKey) => snaps.get(presentKey)
@@ -48,9 +42,8 @@ export const getPresentIndex = createSelector(
   (snaps, presentKey) => snaps.keySeq().indexOf(presentKey)
 );
 
-export const getRequestsById = createSelector(
-  [getJobs],
-  getPresentRequestsById
+export const getRequestsById = createSelector([getPresentJobs], presentJobs =>
+  presentJobs.get("requestsById")
 );
 
 export const getRequestsMounted = createSelector(
@@ -97,11 +90,15 @@ export const getCompletePercentStats = state => {
   const cancel = Math.round((nowCancel * 10) / 10);
 
   return {
-    header: `${currRequests} in batch`,
+    total: currRequests,
     numerator: now,
     errors,
     cancel
   };
 };
+
+export const stillProcessing = createSelector([getRequestsById], requests =>
+  requests.some(request => !request.get("timeComplete"))
+);
 
 // export const makeBatchSelector = batchId => createSelector([getComple]);

@@ -9,11 +9,21 @@ import { mapSnapsAndIndex } from "../../mapState";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 
-const TimeTravel = ({ numActions: max, handleChange, presentSnapIndex }) => {
+const TimeTravel = ({
+  numActions: max,
+  handleChange,
+  presentSnapIndex,
+  stillProcessing
+}) => {
   return (
     <div>
       <h4>Time Travel</h4>
-      <Slider max={max} onChange={handleChange} value={presentSnapIndex} />
+      <Slider
+        max={max}
+        onChange={handleChange}
+        value={presentSnapIndex}
+        disabled={stillProcessing}
+      />
       <h4>
         Present: {presentSnapIndex} / {max}
       </h4>

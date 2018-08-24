@@ -52,6 +52,15 @@ const CancelEnhancer = compose(
   }))
 );
 
+// const FeatureEnhancer = compose(
+//   withHandlers({
+
+//   }),
+//   withProps(
+
+//   )
+// )
+
 export default compose(
   connect(
     mapSnapsAndIndex,

@@ -1,7 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
 import { ProgressBar } from "react-bootstrap";
-import Menu from "./common/Menu";
 
 import { fetchUser } from "../actions/questions";
 import "../stylesheets/main.scss";
@@ -14,12 +13,6 @@ const Header = () => (
     <span>
       <strong className="mfga">MFGA</strong>
     </span>
-  </div>
-);
-
-const FeatureMenu = () => (
-  <div>
-    <Menu />
   </div>
 );
 
@@ -41,9 +34,16 @@ export class App extends React.Component {
 
     // render
     return (
-      <div className="container" style={{ width: "95%" }}>
+      <div
+        className="container"
+        style={{
+          width: "95%",
+          display: "flex",
+          flexDirection: "column",
+          flexWrap: "flex-start"
+        }}
+      >
         <Header />
-        <FeatureMenu />
         <div style={{ paddingTop: "20px" }}>{children}</div>
         <TimeTravel />
       </div>

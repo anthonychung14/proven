@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { Table, Pagination, ProgressBar } from "react-bootstrap";
 import CurrencyListElement from "./CurrencyListElement";
 import SliderProgress from "../../containers/SliderProgress";
+import Menu from "./Menu";
 
 import { createAction } from "redux-actions";
 import actionTypes from "../../action-types";
@@ -38,6 +39,7 @@ class CurrencyRequestList extends React.Component {
 
     return (
       <div>
+        <Menu />
         <Table bordered hover responsive striped>
           <thead>
             <tr>
@@ -67,23 +69,21 @@ class CurrencyRequestList extends React.Component {
             })}
           </tbody>
         </Table>
-
-        <div style={{ display: "flex", flex: 1, flexDirection: "column" }}>
-          <Pagination
-            className="users-pagination pull-right"
-            bsSize="medium"
-            maxButtons={10}
-            first
-            last
-            next
-            prev
-            boundaryLinks
-            items={pages}
-            activePage={page}
-            onSelect={this.props.changePage}
-          />
-
-          <SliderProgress type="progress" />
+        <Pagination
+          className="users-pagination pull-right"
+          bsSize="medium"
+          maxButtons={10}
+          first
+          last
+          next
+          prev
+          boundaryLinks
+          items={pages}
+          activePage={page}
+          onSelect={this.props.changePage}
+        />
+        <div>
+          <SliderProgress />
         </div>
       </div>
     );

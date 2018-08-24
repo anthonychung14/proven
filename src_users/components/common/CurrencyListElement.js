@@ -1,7 +1,7 @@
 import React, { PropTypes } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router";
-import { Button, Glyphicon } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import {
   branch,
   withProps,
