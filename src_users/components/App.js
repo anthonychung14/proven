@@ -45,7 +45,7 @@ export class App extends React.Component {
   // render
   render() {
     // show the loading state while we wait for the app to load
-    const { children } = this.props;
+    const { children, showTime } = this.props;
     // if (!users.length) {
     //   return <ProgressBar active now={100} />;
     // }
@@ -64,6 +64,9 @@ export class App extends React.Component {
         <Header />
         <Routes />
         <div style={{ display: "flex" }}>{children}</div>
+        {
+          showTime && <TimeTravel />
+        }
       </div>
     );
   }
@@ -71,13 +74,15 @@ export class App extends React.Component {
 
 // export the connected class
 function mapStateToProps(state) {
-  return {};
+  return {
+    showTime: state.config.timeTravel
+  };
 }
 
 export default connect(mapStateToProps)(App);
 
 /*
 
-        <TimeTravel />
+        
       </div>
  */
