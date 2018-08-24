@@ -166,11 +166,9 @@ class Time extends React.Component {
 
     return (
       <div style={{ width: "100%" }}>
-        {this.props.showTime && (
+        {this.props.showTrack && (
           <div className="row">
-            <div className="col-md-4">
-              <SliderProgress />
-            </div>
+            <SliderProgress />
           </div>
         )}
         {this.props.showTrack && (

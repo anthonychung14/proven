@@ -64,9 +64,7 @@ export class App extends React.Component {
         <Header />
         <Routes />
         <div style={{ display: "flex" }}>{children}</div>
-        {
-          showTime && <TimeTravel />
-        }
+        {showTime && <TimeTravel />}
       </div>
     );
   }
@@ -75,7 +73,7 @@ export class App extends React.Component {
 // export the connected class
 function mapStateToProps(state) {
   return {
-    showTime: state.config.timeTravel
+    showTime: state.config.get("timeTravel")
   };
 }
 
