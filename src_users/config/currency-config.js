@@ -1,9 +1,10 @@
 const config = Object.freeze({
-  id: "A0",
-  user_id: "A1",
-  numWorkers: 1,
+  chaos: true,
   currencies: ["ETH", "BTC", "TRON", "EOS", "NEO", "NANO"],
-  fiats: ["USD", "JPY", "EUR"]
+  fiats: ["USD", "JPY", "EUR"],
+  id: "A0",
+  numWorkers: 1,
+  user_id: "A1"
 });
 
 export default config;

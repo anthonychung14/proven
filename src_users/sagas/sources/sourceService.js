@@ -1,10 +1,12 @@
 import uuid from "uuid-v4";
+import { Map, fromJS } from "immutable";
 import { delay, buffers, channel, END, eventChannel } from "redux-saga";
 import {
   actionChannel,
   all,
   call,
   fork,
+  flush,
   put,
   race,
   select,
@@ -16,11 +18,13 @@ import actionTypes from "../../action-types";
 import {
   getCurrenciesFromConfig,
   getFiatFromConfig,
+  getPresentRequestsById,
   getCanceledJobs,
   getIsJobCanceled
 } from "../../selectors";
 
 import { createRequestWorkers } from "./sourceWorkers";
+import { keyBy } from "../../actions/requests";
 
 export default function* sourceService() {
   const createChannel = yield actionChannel(
@@ -33,15 +37,58 @@ export default function* sourceService() {
     buffers.expanding(20)
   );
 
+  const retryChannel = yield actionChannel(
+    actionTypes.RETRY_REQUEST,
+    buffers.expanding(20)
+  );
+
   // take from the failChannel,
   // feed all failed/canceled into retry
   const unresolvedChannel = yield channel(buffers.expanding(20));
 
   yield all([
+    fork(watchForRetry, retryChannel),
     fork(watchForCreate, createChannel, enqueueChannel),
     takeLatest(actionTypes.CREATE_CHANNEL, watchTimeChannel)
-    // fork(watchFailedOrCanceled, failChannel)
   ]);
+}
+
+function* watchForRetry(retryChannel) {
+  while (true) {
+    const action = yield take(retryChannel);
+    yield call(delay, 1000);
+    const rest = yield flush(retryChannel);
+    const batchId = uuid();
+
+    // I think this should go in the reducer tbh
+    const presentJobs = yield select(getPresentRequestsById);
+
+    const retryRequests = keyBy(
+      fromJS(rest.concat(action).map(({ payload }) => payload))
+        .toMap()
+        .map(id =>
+          Map({
+            id,
+            timeEnqueued: null,
+            timeStarted: null,
+            timeComplete: null,
+            value: null
+          })
+        ),
+      "id"
+    );
+
+    const stateRequests = retryRequests.map(r => presentJobs.get(r.get("id")));
+    const mergedRequests = retryRequests.merge(stateRequests);
+
+    yield put({
+      type: actionTypes.CREATE_REQUESTS,
+      payload: {
+        requests: mergedRequests,
+        batchId
+      }
+    });
+  }
 }
 
 function makeTimeChannel() {

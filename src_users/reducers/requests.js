@@ -104,16 +104,31 @@ export const cancelRequestData = (state, { payload }) => {
     .set("requestsCanceled", state.get("requestsCanceled").add(payload));
 };
 
-export const resolveRequestData = (
-  state,
-  { payload: { id, timeComplete, price } }
-) => {
+export const errorRequestData = (state, { payload }) => {
+  return state
+    .setIn(["requestsById", payload, "timeComplete"], new Date())
+    .setIn(["requestsById", payload, "status"], "ERROR")
+    .set("requestsCanceled", state.get("requestsCanceled").add(payload));
+};
+
+export const resolveRequestData = (state, action) => {
   const request = state.getIn(["requestsById", id]);
+  const {
+    payload: { id, timeComplete, price }
+  } = action;
 
   return state
     .setIn(["requestsById", id, "timeComplete"], timeComplete)
     .setIn(["requestsById", id, "status"], "COMPLETE")
     .setIn(["requestsById", id, "value"], price);
+};
+
+export const retryRequest = (state, action) => {
+  const request = state.getIn(["requestsById", id]);
+  // what an easy way to map a prop amirite
+  const { payload: id } = action;
+
+  return state.setIn(["requestsById", id, "status"], "RETRYING");
 };
 
 export const clearRequests = state => initialSnapshotState;
@@ -149,6 +164,14 @@ const requests = (state = initialSnapshotState, action) => {
 
     case actionTypes.CANCEL_REQUEST:
       presentJobState = cancelRequestData(prevJobState, action);
+      break;
+
+    case actionTypes.ERROR_REQUEST:
+      presentJobState = errorRequestData(prevJobState, action);
+      break;
+
+    case actionTypes.RETRY_REQUEST:
+      presentJobState = retryRequest(prevJobState, action);
       break;
 
     case actionTypes.CLEAR_REQUESTS:

@@ -2,8 +2,6 @@ import React, { PropTypes } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router";
 import { Button, Glyphicon } from "react-bootstrap";
-
-import { createAction } from "redux-actions";
 import {
   branch,
   withProps,
@@ -11,6 +9,9 @@ import {
   renderNothing,
   withHandlers
 } from "recompose";
+
+// yeah it's a component + container :l
+import ActionButton from "../../containers/ActionButton";
 
 import actionTypes from "../../action-types";
 import { getTime } from "../../util";
@@ -20,10 +21,11 @@ class CurrencyListElement extends React.Component {
   getBackgroundColor(status) {
     const map = {
       CREATED: { backgroundColor: "#65F6FF" },
-      ENQUEUED: { backgroundColor: "#7CE8C8" },
-      COMPLETE: { backgroundColor: "#DFECD7" },
+      ENQUEUED: { backgroundColor: "#DFECD7" },
+      COMPLETE: { backgroundColor: "#7CE8C8" },
       STARTED: { backgroundColor: "#BABBFF" },
-      ERROR: { backgroundColor: "#DFECD7" },
+      ERROR: { backgroundColor: "#FFBAB9" },
+      RETRYING: { backgroundColor: "#A9ABFF" },
       CANCELLED: { backgroundColor: "#FFFE7C" }
     };
 
@@ -67,17 +69,10 @@ class CurrencyListElement extends React.Component {
             : "..."}
         </td>
         <td>{fiat}</td>
-        <td>{value || 0}</td>
+        <td>{value || "N/A"}</td>
         <td style={{ ...this.getBackgroundColor(status) }}>{status}</td>
         <td>
-          <Button
-            bsSize="xsmall"
-            className="user-delete"
-            onClick={handleClickCancel}
-            disabled={Boolean(timeComplete)}
-          >
-            Cancel <Glyphicon glyph="remove-circle" />
-          </Button>
+          <ActionButton id={id} timeComplete={timeComplete} status={status} />
         </td>
       </tr>
     );
@@ -89,9 +84,7 @@ export default compose(
     (state, { currencyRequestId }) => ({
       currencyRequest: getReqJobById(state, currencyRequestId)
     }),
-    {
-      cancelRequest: createAction(actionTypes.CANCEL_REQUEST)
-    }
+    {}
   ),
   withProps(({ currencyRequest }) => ({
     id: currencyRequest.get("id"),
@@ -102,8 +95,5 @@ export default compose(
     timeComplete: currencyRequest.get("timeComplete"),
     timeStarted: currencyRequest.get("timeStarted"),
     timeEnqueued: currencyRequest.get("timeEnqueued")
-  })),
-  withHandlers({
-    handleClickCancel: ({ cancelRequest, id }) => _ => cancelRequest(id)
-  })
+  }))
 )(CurrencyListElement);

@@ -6,6 +6,7 @@ import { IndexLinkContainer, LinkContainer } from "react-router-bootstrap";
 import {
   addWorker,
   clearRequests,
+  startChaos,
   startRequests,
   startTimeChannel,
   stopTime
@@ -52,9 +53,8 @@ class Menu extends React.Component {
           <Button
             bsStyle="info"
             bsSize="small"
-            disabled
             onClick={() => {
-              this.props.startRequests();
+              this.props.startChaos();
             }}
           >
             Start Chaos
@@ -76,7 +76,14 @@ class Menu extends React.Component {
 
 export default connect(
   null,
-  { addWorker, startRequests, startTimeChannel, clearRequests, stopTime }
+  {
+    addWorker,
+    clearRequests,
+    startChaos,
+    startRequests,
+    startTimeChannel,
+    stopTime
+  }
 )(Menu);
 
 /* 

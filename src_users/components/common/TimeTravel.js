@@ -3,7 +3,8 @@ import { connect } from "react-redux";
 import { compose, withHandlers } from "recompose";
 
 import { getSnaps, getPresentIndex } from "../../selectors";
-import { timeJump } from "../../actions/requests";
+import { timeRequest } from "../../actions/requests";
+import { mapSnapsAndIndex } from "../../mapState";
 
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
@@ -20,21 +21,16 @@ const TimeTravel = ({ numActions: max, handleChange, presentSnapIndex }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  numActions: getSnaps(state).size - 1 || 1,
-  presentSnapIndex: getPresentIndex(state)
-});
-
 export default compose(
   connect(
-    mapStateToProps,
+    mapSnapsAndIndex,
     {
-      timeJump
+      timeRequest
     }
   ),
   withHandlers({
-    handleChange: ({ timeJump }) => change => {
-      timeJump(change);
+    handleChange: ({ timeRequest }) => change => {
+      timeRequest(change);
     }
   })
 )(TimeTravel);

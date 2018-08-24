@@ -23,10 +23,14 @@ const addWorker = state => {
   return next <= 4 ? state.set("numWorkers", next) : state;
 };
 
+const toggleChaos = state => state.set("chaos", !state.get("chaos"));
+
 const configReducer = (state = fromJS(config), action) => {
   switch (action.type) {
     case actionTypes.ADD_WORKER:
       return addWorker(state);
+    case actionTypes.START_CHAOS:
+      return toggleChaos(state);
     default:
       return state;
   }

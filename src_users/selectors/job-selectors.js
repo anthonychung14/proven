@@ -36,6 +36,7 @@ export const getPresentKey = createSelector(
   getPresentKeyFromJobState
 );
 
+// don't think this works :l
 export const getPresentJobs = createSelector(
   [getSnaps, getPresentKey],
   (snaps, presentKey) => snaps.get(presentKey)
