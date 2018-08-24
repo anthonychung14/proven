@@ -9,7 +9,8 @@ import {
   Pipeline as pipeline,
   Stream,
   EventOut,
-  avg
+  avg,
+  percentile
 } from "pondjs";
 
 import {
@@ -37,7 +38,8 @@ class Time extends React.Component {
     super();
     this.state = {
       time: new Date(),
-      events: new Ring(200)
+      events: new Ring(200),
+      percentile90Out: new Ring(100)
       // resolvedEvents: new Ring(100)
     };
 
@@ -48,33 +50,24 @@ class Time extends React.Component {
     const { numCertain } = this.props;
     const base = Math.sin(t.getTime() / 10000000) * 10;
     const value = parseInt(base + numCertain - 7);
-    console.log(value, "is this base right?", numCertain, base);
     return new TimeEvent(t, value);
   }
 
   componentDidMount() {
-    //
-    // Setup our aggregation pipelines
-    //
-
     this.stream = new Stream();
 
-    // pipeline()
-    //   .from(this.stream)
-    //   .windowBy("2s")
-    //   .emitOn("discard")
-    //   .aggregate({
-    //     value: { value: avg }
-    //   })
-    //   .to(EventOut, event => {
-    //     const events = this.state.events;
-    //     events.push(event);
-    //     // this.setState({ resolvedEvents: events });
-    //     console.log("pushing", event);
-    //   });
-    //
-    // Setup our interval to advance the time and generate raw events
-    //
+    pipeline()
+      .from(this.stream)
+      .windowBy("1s")
+      .emitOn("discard")
+      .aggregate({
+        value: { value: percentile(90) }
+      })
+      .to(EventOut, event => {
+        const events = this.state.percentile90Out;
+        events.push(event);
+        this.setState({ percentile90Out: events });
+      });
 
     const increment = 200;
     this.interval = setInterval(() => {
@@ -123,6 +116,10 @@ class Time extends React.Component {
       name: "raw",
       events: this.state.events.toArray()
     });
+    const perc90Series = new TimeSeries({
+      name: "five minute perc90",
+      events: this.state.percentile90Out.toArray()
+    });
 
     // const perc50Series = new TimeSeries({
     //   name: "average resolved events",
@@ -145,6 +142,12 @@ class Time extends React.Component {
     // Charts (after a certain amount of time, just show hourly rollup)
     const charts = (
       <Charts>
+        <BarChart
+          axis="y"
+          series={perc90Series}
+          style={fiveMinuteStyle}
+          columns={["value"]}
+        />
         <ScatterChart axis="y" series={eventSeries} style={scatterStyle} />
       </Charts>
     );
@@ -175,8 +178,8 @@ class Time extends React.Component {
               style={style}
               categories={[
                 {
-                  key: "avgConfirm",
-                  label: "Average Confirm",
+                  key: "perc90",
+                  label: "perc90",
                   style: { fill: "#C5DCB7" }
                 }
               ]}
