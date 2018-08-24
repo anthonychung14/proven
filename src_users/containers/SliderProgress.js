@@ -62,7 +62,7 @@ const SliderProgress = ({ denom, header, numerator, errors, cancel }) => (
       {cancel ? (
         <ProgressBar
           now={cancel - 0.5}
-          label={`${cancel}% Error`}
+          label={`${cancel}% Canceled`}
           bsStyle="warning"
           id="last"
         />
