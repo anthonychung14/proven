@@ -13,7 +13,7 @@ const TimeTravel = ({
   numActions: max,
   handleChange,
   presentSnapIndex,
-  stillProcessing
+  disabledSlider
 }) => {
   return (
     <div className="footer">
@@ -21,12 +21,13 @@ const TimeTravel = ({
         max={max}
         onChange={handleChange}
         value={presentSnapIndex}
-        disabled={stillProcessing}
+        disabled={disabledSlider}
         railStyle={{ color: "blue" }}
       />
-      <h5>
+      <h4>
         {presentSnapIndex} / {max} actions taken
-      </h5>
+      </h4>
+      <h5>Time Travel {disabledSlider ? "is not" : "is"} available</h5>
     </div>
   );
 };

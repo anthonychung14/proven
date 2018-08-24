@@ -189,7 +189,12 @@ class Time extends React.Component {
     ]);
 
     return (
-      <div>
+      <div style={{ width: "100%" }}>
+        <div className="row">
+          <div className="col-md-4">
+            <SliderProgress />
+          </div>
+        </div>
         <div className="row">
           <div className="col-md-4">
             <Legend
@@ -232,9 +237,6 @@ class Time extends React.Component {
               </ChartContainer>
             </Resizable>
           </div>
-        </div>
-        <div style={{ width: "100%", paddingTop: "30px" }}>
-          <SliderProgress />
         </div>
       </div>
     );

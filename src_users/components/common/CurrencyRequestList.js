@@ -46,7 +46,7 @@ class CurrencyRequestList extends React.Component {
         }}
       >
         <Table bordered hover responsive striped>
-          <thead>
+          <thead className="t-head">
             <tr>
               <th>ID</th>
               <th>Symbol</th>
@@ -59,7 +59,7 @@ class CurrencyRequestList extends React.Component {
               <th>Action</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="t-body">
             {currencyRequests.toList().map((currencyRequest, index) => {
               if (index >= start_offset && start_count < per_page) {
                 start_count++;
