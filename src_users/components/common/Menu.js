@@ -10,7 +10,7 @@ import {
   startRequests,
   startTimeChannel,
   stopTime,
-  toggleTimeTravel,
+  toggleTime,
   toggleTrack
 } from "../../actions/requests";
 
@@ -115,21 +115,11 @@ class Menu extends React.Component {
             bsStyle="info"
             style={{ padding: "5px" }}
             onClick={() => {
-              this.props.toggleTimeTravel();
+              this.props.toggleTime();
             }}
           >
             <Glyphicon glyph={"time"} />
             TIME
-          </Button>
-          <Button
-            bsStyle="info"
-            style={{ padding: "5px" }}
-            onClick={() => {
-              this.props.toggleTrack();
-            }}
-          >
-            <Glyphicon glyph={"signal"} />
-            TRACK
           </Button>
           <Button
             bsStyle="info"
@@ -145,11 +135,11 @@ class Menu extends React.Component {
             bsStyle="info"
             style={{ padding: "5px" }}
             onClick={() => {
-              this.props.startTimeChannel();
+              this.props.toggleTrack();
             }}
           >
-            <Glyphicon glyph={"flash"} />
-            REAL-TIME
+            <Glyphicon glyph={"signal"} />
+            TRACK
           </Button>
         </ButtonGroup>
       </div>
@@ -165,7 +155,9 @@ export default connect(
     startChaos,
     startRequests,
     startTimeChannel,
-    stopTime
+    stopTime,
+    toggleTime,
+    toggleTrack
   }
 )(Menu);
 

@@ -24,7 +24,7 @@ const addWorker = state => {
 };
 
 const toggleChaos = state => state.set("chaos", !state.get("chaos"));
-const toggleTime = state => state.set("time", !state.get("time"));
+const toggleTime = state => state.set("timeTravel", !state.get("timeTravel"));
 const toggleTrack = state => state.set("track", !state.get("track"));
 
 const configReducer = (state = fromJS(config), action) => {

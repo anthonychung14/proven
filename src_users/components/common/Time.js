@@ -166,47 +166,37 @@ class Time extends React.Component {
 
     return (
       <div style={{ width: "100%" }}>
-        <div className="row">
-          <div className="col-md-4">
-            <SliderProgress />
+        {this.props.showTime && (
+          <div className="row">
+            <div className="col-md-4">
+              <SliderProgress />
+            </div>
           </div>
-        </div>
-        <div className="row">
-          <div className="col-md-4">
-            <Legend
-              type="swatch"
-              style={style}
-              categories={[
-                {
-                  key: "perc90",
-                  label: "perc90",
-                  style: { fill: "#C5DCB7" }
-                }
-              ]}
-            />
+        )}
+        {this.props.showTrack && (
+          <div className="row">
+            <div className="col-md-12">
+              <Resizable>
+                <ChartContainer timeRange={timeRange}>
+                  <ChartRow height="150">
+                    <YAxis
+                      id="y"
+                      label="Requests"
+                      min={0}
+                      max={50}
+                      width="70"
+                      type="linear"
+                    />
+                    {charts}
+                  </ChartRow>
+                </ChartContainer>
+              </Resizable>
+            </div>
           </div>
+        )}
+        <div className="row">
           <div className="col-md-8">
             <span style={dateStyle}>{latestTime}</span>
-          </div>
-        </div>
-        <hr />
-        <div className="row">
-          <div className="col-md-12">
-            <Resizable>
-              <ChartContainer timeRange={timeRange}>
-                <ChartRow height="150">
-                  <YAxis
-                    id="y"
-                    label="Requests"
-                    min={0}
-                    max={50}
-                    width="70"
-                    type="linear"
-                  />
-                  {charts}
-                </ChartRow>
-              </ChartContainer>
-            </Resizable>
           </div>
         </div>
       </div>
@@ -221,7 +211,9 @@ const mapStateToProps = state => {
         req.get("status") === "COMPLETE" ||
         req.get("status") === "ERROR" ||
         req.get("status") === "CANCELLED"
-    ).size
+    ).size,
+    showTrack: state.config.get("track"),
+    showTime: state.config.get("timeTravel")
   };
 };
 
@@ -229,3 +221,4 @@ export default connect(
   mapStateToProps,
   {}
 )(Time);
+<hr />;
