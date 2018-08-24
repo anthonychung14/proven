@@ -9,7 +9,7 @@ import {
   Pipeline as pipeline,
   Stream,
   EventOut,
-  percentile
+  avg
 } from "pondjs";
 
 import {
@@ -25,28 +25,31 @@ import {
 } from "react-timeseries-charts";
 
 import SliderProgress from "../../containers/SliderProgress";
+import { getRequestsById } from "../../selectors";
 
 const sec = 1000;
 const minute = 60 * sec;
 const hours = 60 * minute;
-const rate = 80;
+const rate = 100;
 
 class Time extends React.Component {
   constructor() {
     super();
     this.state = {
-      time: new Date(2015, 0, 1),
-      events: new Ring(200),
-      percentile50Out: new Ring(100),
-      percentile90Out: new Ring(100)
+      time: new Date(),
+      events: new Ring(200)
+      // resolvedEvents: new Ring(100)
     };
 
     this.getNewEvent.bind(this);
   }
 
   getNewEvent(t) {
-    const base = Math.sin(t.getTime() / 10000000) * 350 + 500;
-    return new TimeEvent(t, parseInt(base + Math.random() * 1000, 10));
+    const { numCertain } = this.props;
+    const base = Math.sin(t.getTime() / 10000000) * 10;
+    const value = parseInt(base + numCertain - 7);
+    console.log(value, "is this base right?", numCertain, base);
+    return new TimeEvent(t, value);
   }
 
   componentDidMount() {
@@ -56,37 +59,24 @@ class Time extends React.Component {
 
     this.stream = new Stream();
 
-    pipeline()
-      .from(this.stream)
-      .windowBy("5m")
-      .emitOn("discard")
-      .aggregate({
-        value: { value: percentile(90) }
-      })
-      .to(EventOut, event => {
-        const events = this.state.percentile90Out;
-        events.push(event);
-        this.setState({ percentile90Out: events });
-      });
-
-    pipeline()
-      .from(this.stream)
-      .windowBy("5m")
-      .emitOn("discard")
-      .aggregate({
-        value: { value: percentile(50) }
-      })
-      .to(EventOut, event => {
-        const events = this.state.percentile50Out;
-        events.push(event);
-        this.setState({ percentile50Out: events });
-      });
-
+    // pipeline()
+    //   .from(this.stream)
+    //   .windowBy("2s")
+    //   .emitOn("discard")
+    //   .aggregate({
+    //     value: { value: avg }
+    //   })
+    //   .to(EventOut, event => {
+    //     const events = this.state.events;
+    //     events.push(event);
+    //     // this.setState({ resolvedEvents: events });
+    //     console.log("pushing", event);
+    //   });
     //
     // Setup our interval to advance the time and generate raw events
     //
 
-    const increment = minute;
+    const increment = 200;
     this.interval = setInterval(() => {
       const t = new Date(this.state.time.getTime() + increment);
       const event = this.getNewEvent(t);
@@ -134,22 +124,17 @@ class Time extends React.Component {
       events: this.state.events.toArray()
     });
 
-    const perc50Series = new TimeSeries({
-      name: "five minute perc50",
-      events: this.state.percentile50Out.toArray()
-    });
-
-    const perc90Series = new TimeSeries({
-      name: "five minute perc90",
-      events: this.state.percentile90Out.toArray()
-    });
+    // const perc50Series = new TimeSeries({
+    //   name: "average resolved events",
+    //   events: this.state.resolvedEvents.toArray()
+    // });
 
     // Timerange for the chart axis
-    const initialBeginTime = new Date(2015, 0, 1);
-    const timeWindow = 3 * hours;
+    const initialBeginTime = new Date();
+    const timeWindow = 4 * sec;
 
     let beginTime;
-    const endTime = new Date(this.state.time.getTime() + minute);
+    const endTime = new Date(this.state.time.getTime() + 200);
     if (endTime.getTime() - timeWindow < initialBeginTime.getTime()) {
       beginTime = initialBeginTime;
     } else {
@@ -160,18 +145,6 @@ class Time extends React.Component {
     // Charts (after a certain amount of time, just show hourly rollup)
     const charts = (
       <Charts>
-        <BarChart
-          axis="y"
-          series={perc90Series}
-          style={fiveMinuteStyle}
-          columns={["value"]}
-        />
-        <BarChart
-          axis="y"
-          series={perc50Series}
-          style={fiveMinuteStyle}
-          columns={["value"]}
-        />
         <ScatterChart axis="y" series={eventSeries} style={scatterStyle} />
       </Charts>
     );
@@ -184,7 +157,7 @@ class Time extends React.Component {
     };
 
     const style = styler([
-      { key: "perc50", color: "#C5DCB7", width: 1, dashed: true },
+      { key: "avgConfirm", color: "#C5DCB7", width: 1, dashed: true },
       { key: "perc90", color: "#DFECD7", width: 2 }
     ]);
 
@@ -202,14 +175,9 @@ class Time extends React.Component {
               style={style}
               categories={[
                 {
-                  key: "perc50",
-                  label: "50th Percentile",
+                  key: "avgConfirm",
+                  label: "Average Confirm",
                   style: { fill: "#C5DCB7" }
-                },
-                {
-                  key: "perc90",
-                  label: "90th Percentile",
-                  style: { fill: "#DFECD7" }
                 }
               ]}
             />
@@ -226,9 +194,9 @@ class Time extends React.Component {
                 <ChartRow height="150">
                   <YAxis
                     id="y"
-                    label="Value"
+                    label="Requests"
                     min={0}
-                    max={1500}
+                    max={50}
                     width="70"
                     type="linear"
                   />
@@ -243,10 +211,14 @@ class Time extends React.Component {
   }
 }
 
-const mapStateToProps = ({ jobs }) => {
-  const timeEvents = jobs.get("events");
+const mapStateToProps = state => {
   return {
-    events: timeEvents
+    numCertain: getRequestsById(state).filter(
+      req =>
+        req.get("status") === "COMPLETE" ||
+        req.get("status") === "ERROR" ||
+        req.get("status") === "CANCELLED"
+    ).size
   };
 };
 

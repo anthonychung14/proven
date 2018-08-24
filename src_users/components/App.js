@@ -59,7 +59,6 @@ export class App extends React.Component {
         <Header />
         <Routes />
         <div style={{ display: "flex" }}>{children}</div>
-        <TimeTravel />
       </div>
     );
   }
@@ -71,3 +70,9 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps)(App);
+
+/*
+
+        <TimeTravel />
+      </div>
+ */
