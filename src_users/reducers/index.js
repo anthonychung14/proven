@@ -37,11 +37,21 @@ const configReducer = (state = fromJS(config), action) => {
 };
 
 const updateAnswers = (state = List(), action) =>
-  fromJS(action.payload).map(i => i.get("answer"));
+  console.log(action) || fromJS(action.payload).map(i => i.get("answer"));
 
 const answers = (state = List(), action) => {
   switch (action.type) {
     case actionTypes.GOT_ANSWERS:
+      debugger;
+      return updateAnswers(state, action);
+    default:
+      return state;
+  }
+};
+
+const questions = (state = List(), action) => {
+  switch (action.type) {
+    case actionTypes.GOT_QUESTIONS:
       debugger;
       return updateAnswers(state, action);
     default:
@@ -65,5 +75,6 @@ export const reducers = combineReducers({
   }),
   jobs: requestReducer,
   config: configReducer,
-  answers
+  answers,
+  questions
 });

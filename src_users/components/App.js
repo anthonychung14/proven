@@ -23,7 +23,12 @@ const Routes = () => (
     </IndexLinkContainer>
     <LinkContainer to="/answer">
       <NavItem>
-        Answer <Glyphicon glyph="plus-sign" />
+        Answer <Glyphicon glyph="pencil" />
+      </NavItem>
+    </LinkContainer>
+    <LinkContainer to="/questions">
+      <NavItem>
+        Question <Glyphicon glyph="question-sign" />
       </NavItem>
     </LinkContainer>
   </Nav>
