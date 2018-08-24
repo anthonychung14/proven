@@ -1,6 +1,7 @@
 const config = Object.freeze({
   chaos: true,
-  currencies: ["ETH", "BTC", "TRON", "EOS", "NEO", "NANO"],
+  // currencies: ["ETH", "BTC", "TRON", "EOS", "NEO", "NANO"],
+  currencies: ["ETH", "BTC"],
   fiats: ["USD", "JPY", "EUR"],
   id: "A0",
   numWorkers: 1,

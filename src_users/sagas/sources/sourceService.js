@@ -4,6 +4,7 @@ import { delay, buffers, channel, END, eventChannel } from "redux-saga";
 import {
   actionChannel,
   all,
+  cancel,
   call,
   fork,
   flush,
@@ -18,7 +19,7 @@ import actionTypes from "../../action-types";
 import {
   getCurrenciesFromConfig,
   getFiatFromConfig,
-  getPresentRequestsById,
+  getRequestsById,
   getCanceledJobs,
   getIsJobCanceled
 } from "../../selectors";
@@ -42,14 +43,18 @@ export default function* sourceService() {
     buffers.expanding(20)
   );
 
+  const completeChannel = yield actionChannel(
+    actionTypes.COMPLETE_BATCH,
+    buffers.expanding(20)
+  );
+
   // take from the failChannel,
   // feed all failed/canceled into retry
   const unresolvedChannel = yield channel(buffers.expanding(20));
 
   yield all([
     fork(watchForRetry, retryChannel),
-    fork(watchForCreate, createChannel, enqueueChannel),
-    takeLatest(actionTypes.CREATE_CHANNEL, watchTimeChannel)
+    fork(watchForCreate, createChannel, enqueueChannel, completeChannel)
   ]);
 }
 
@@ -61,7 +66,7 @@ function* watchForRetry(retryChannel) {
     const batchId = uuid();
 
     // I think this should go in the reducer tbh
-    const presentJobs = yield select(getPresentRequestsById);
+    const presentJobs = yield select(getRequestsById);
 
     const retryRequests = keyBy(
       fromJS(rest.concat(action).map(({ payload }) => payload))
@@ -91,32 +96,7 @@ function* watchForRetry(retryChannel) {
   }
 }
 
-function makeTimeChannel() {
-  const timeChannel = eventChannel(emitter => {
-    const timeEmitter = setInterval(() => {
-      emitter({ time: new Date() });
-    }, 500);
-    // The subscriber must return an unsubscribe function
-    return () => {
-      timeEmitter();
-    };
-  });
-
-  return { timeChannel };
-}
-
-function* watchTimeChannel() {
-  const { timeChannel } = makeTimeChannel();
-  while (true) {
-    const { time } = yield take(timeChannel);
-    yield put({
-      type: actionTypes.EMIT_TIME,
-      payload: { time }
-    });
-  }
-}
-
-function* watchForCreate(createChannel, enqueueChannel) {
+function* watchForCreate(createChannel, enqueueChannel, completeChannel) {
   const doneChannel = channel(buffers.expanding(20));
 
   while (true) {
@@ -137,6 +117,7 @@ function* watchForCreate(createChannel, enqueueChannel) {
 
     // before enqueuing, make sure that it hasn't been canceled yet
 
+    console.log("creating requests", requestIds);
     // batchId -> [1,2,3,4,5]
     const batchTask = yield fork(createRequestWorkers, {
       enqueueChannel,
@@ -160,9 +141,11 @@ function* watchForCreate(createChannel, enqueueChannel) {
 
       if (isCanceled) {
         yield put(doneChannel, { requestId });
+        console.log("canceled broh");
         continue;
       }
 
+      console.log("en queued", requestId);
       yield put({
         type: actionTypes.ENQUEUE_REQUEST,
         payload: {
@@ -175,15 +158,20 @@ function* watchForCreate(createChannel, enqueueChannel) {
       yield call(delay, 500);
     }
 
-    const { pause, resolved, cancel } = yield race({
+    const { pause, resolved, cancelled } = yield race({
       pause: take(actionTypes.PAUSE),
-      resolved: take(actionTypes.COMPLETE_BATCH),
-      cancel: take(actionTypes.CANCEL_BATCH)
+      resolved: take(completeChannel),
+      cancelled: take(actionTypes.CANCEL_BATCH)
     });
 
     if (pause) {
       console.log("wait to start again");
       yield take(actionTypes.START_AGAIN);
+    } else {
+      // yield cancel(watchTask);
+      // yield cancel(batchTask);
+
+      console.log("we are finished");
     }
   }
 }

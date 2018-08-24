@@ -30,7 +30,7 @@ class CurrencyRequestList extends React.Component {
   render() {
     // pagination
     const { currencyRequests, page } = this.props;
-    const per_page = 100;
+    const per_page = 10;
     const pages = Math.ceil(currencyRequests.length / per_page);
     const start_offset = (page - 1) * per_page;
     let start_count = 0;

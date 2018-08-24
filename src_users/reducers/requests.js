@@ -107,8 +107,7 @@ export const cancelRequestData = (state, { payload }) => {
 export const errorRequestData = (state, { payload }) => {
   return state
     .setIn(["requestsById", payload, "timeComplete"], new Date())
-    .setIn(["requestsById", payload, "status"], "ERROR")
-    .set("requestsCanceled", state.get("requestsCanceled").add(payload));
+    .setIn(["requestsById", payload, "status"], "ERROR");
 };
 
 export const resolveRequestData = (state, action) => {
