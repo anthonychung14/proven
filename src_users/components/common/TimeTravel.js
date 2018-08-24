@@ -16,17 +16,17 @@ const TimeTravel = ({
   stillProcessing
 }) => {
   return (
-    <div>
-      <h4>Time Travel</h4>
+    <div className="footer">
       <Slider
         max={max}
         onChange={handleChange}
         value={presentSnapIndex}
         disabled={stillProcessing}
+        railStyle={{ color: "blue" }}
       />
-      <h4>
-        Present: {presentSnapIndex} / {max}
-      </h4>
+      <h5>
+        {presentSnapIndex} / {max} actions taken
+      </h5>
     </div>
   );
 };

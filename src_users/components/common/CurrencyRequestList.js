@@ -2,8 +2,6 @@ import React from "react";
 import { connect } from "react-redux";
 import { Table, Pagination, ProgressBar } from "react-bootstrap";
 import CurrencyListElement from "./CurrencyListElement";
-import SliderProgress from "../../containers/SliderProgress";
-import Menu from "./Menu";
 
 import { createAction } from "redux-actions";
 import actionTypes from "../../action-types";
@@ -32,14 +30,21 @@ class CurrencyRequestList extends React.Component {
   render() {
     // pagination
     const { currencyRequests, page, batches } = this.props;
-    const per_page = 10;
+    const per_page = 15;
     const pages = Math.ceil(currencyRequests.length / per_page);
     const start_offset = (page - 1) * per_page;
     let start_count = 0;
 
     return (
-      <div>
-        <Menu />
+      <div
+        style={{
+          justifyContent: "center",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          paddingBottom: "20px"
+        }}
+      >
         <Table bordered hover responsive striped>
           <thead>
             <tr>
@@ -82,9 +87,6 @@ class CurrencyRequestList extends React.Component {
           activePage={page}
           onSelect={this.props.changePage}
         />
-        <div>
-          <SliderProgress />
-        </div>
       </div>
     );
   }

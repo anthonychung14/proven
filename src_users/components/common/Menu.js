@@ -74,17 +74,20 @@ class Menu extends React.Component {
       <div
         style={{
           display: "flex",
-          flex: 1,
-          paddingBottom: "15px"
+          justifyContent: "center",
+          flexDirection: "row",
+          paddingBottom: "15px",
+          padding: "10px"
         }}
       >
         <ButtonGroup
           style={{
-            justifyContent: "space-around",
-            alignItems: "center",
+            justifyContent: "center",
             display: "flex",
+            flexWrap: "wrap",
             width: "100%"
           }}
+          className="menu"
         >
           <Button
             bsStyle="info"
@@ -155,7 +158,7 @@ export default connect(
 )(Menu);
 
 /* 
-<LinkContainer to="/user-edit">
+      <LinkContainer to="/user-edit">a
           <NavItem>
             Add User <Glyphicon glyph="plus-sign" />
           </NavItem>
@@ -164,7 +167,7 @@ export default connect(
 
         <div style={{ display: "flex" }}>
           
-          <Nav bsStyle="pills">
+          <Nav bsStyle="pills">a
             <IndexLinkContainer to="/ask">
               <NavItem>Ask</NavItem>
             </IndexLinkContainer>

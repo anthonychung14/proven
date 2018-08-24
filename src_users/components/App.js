@@ -1,11 +1,10 @@
 import React from "react";
 import { connect } from "react-redux";
-import { ProgressBar } from "react-bootstrap";
+import { Nav, NavItem, Glyphicon } from "react-bootstrap";
+import { IndexLinkContainer, LinkContainer } from "react-router-bootstrap";
 
 import { fetchUser } from "../actions/questions";
 import "../stylesheets/main.scss";
-
-import TimeTravel from "./common/TimeTravel";
 
 const Header = () => (
   <div className="header">
@@ -14,6 +13,19 @@ const Header = () => (
       <strong className="mfga">MFGA</strong>
     </span>
   </div>
+);
+
+const Routes = () => (
+  <Nav bsStyle="pills">
+    <IndexLinkContainer to="/">
+      <NavItem>Home</NavItem>
+    </IndexLinkContainer>
+    <LinkContainer to="/answer">
+      <NavItem>
+        Answer <Glyphicon glyph="plus-sign" />
+      </NavItem>
+    </LinkContainer>
+  </Nav>
 );
 
 // App component
@@ -44,8 +56,8 @@ export class App extends React.Component {
         }}
       >
         <Header />
-        <div style={{ paddingTop: "20px" }}>{children}</div>
-        <TimeTravel />
+        <Routes />
+        <div>{children}</div>
       </div>
     );
   }

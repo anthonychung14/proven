@@ -24,6 +24,8 @@ import {
   styler
 } from "react-timeseries-charts";
 
+import SliderProgress from "../../containers/SliderProgress";
+
 const sec = 1000;
 const minute = 60 * sec;
 const hours = 60 * minute;
@@ -230,6 +232,9 @@ class Time extends React.Component {
               </ChartContainer>
             </Resizable>
           </div>
+        </div>
+        <div style={{ width: "100%" }}>
+          <SliderProgress />
         </div>
       </div>
     );

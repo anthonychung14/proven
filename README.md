@@ -1,5 +1,9 @@
 # Proven
 
+## Credit
+
+https://github.com/catalin-luntraru/redux-minimal for the boiler
+
 # Scripts
 
 Besides the `start` script, there are also other scripts

@@ -97,8 +97,24 @@ export const getCompletePercentStats = state => {
   };
 };
 
-export const stillProcessing = createSelector([getRequestsById], requests =>
-  requests.some(request => !request.get("timeComplete"))
-);
+export const isProcessing = createSelector([getJobs], jobs => {
+  // if the present !== past, we're jumping
+  if (
+    jobs.get("present") !==
+    jobs
+      .get("snaps")
+      .keySeq()
+      .last()
+  ) {
+    return false;
+  }
+
+  return jobs
+    .get("snaps")
+    .last()
+    .get("requestsById")
+    .some(request => !request.get("timeComplete"));
+});
+// if the presentsnapShot is not the last one, we know we're traveling and it's cool
 
 // export const makeBatchSelector = batchId => createSelector([getComple]);

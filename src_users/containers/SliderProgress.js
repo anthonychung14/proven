@@ -47,28 +47,24 @@ const SliderProgress = ({ denom, total, numerator, errors, cancel }) => (
         flexWrap: "wrap"
       }}
     >
-      {numerator ? (
-        <ProgressBar
-          now={numerator - 0.5}
-          label={`${numerator}% Success`}
-          bsStyle="success"
-        />
-      ) : null}
-      {errors ? (
-        <ProgressBar
-          now={errors - 0.5}
-          label={`${errors}% Error`}
-          bsStyle="danger"
-        />
-      ) : null}
-      {cancel ? (
-        <ProgressBar
-          now={cancel - 0.5}
-          label={`${cancel}% canceled`}
-          bsStyle="warning"
-          id="last"
-        />
-      ) : null}
+      <ProgressBar
+        now={numerator ? numerator - 0.5 : 0}
+        label={`${numerator}% Success`}
+        bsStyle="success"
+      />
+
+      <ProgressBar
+        now={errors ? errors - 0.5 : 0}
+        label={`${errors}% Error`}
+        bsStyle="danger"
+      />
+
+      <ProgressBar
+        now={cancel ? cancel - 0.5 : 0}
+        label={`${cancel}% canceled`}
+        bsStyle="warning"
+        id="last"
+      />
     </ProgressBar>
   </div>
 );
