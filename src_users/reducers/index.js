@@ -1,4 +1,4 @@
-import { OrderedMap, Map, OrderedSet, fromJS, Set, Record } from "immutable";
+import { OrderedMap, Map, OrderedSet, fromJS, Set, List } from "immutable";
 import uuid from "uuid-v4";
 import Ring from "ringjs";
 
@@ -36,6 +36,19 @@ const configReducer = (state = fromJS(config), action) => {
   }
 };
 
+const updateAnswers = (state = List(), action) =>
+  fromJS(action.payload).map(i => i.get("answer"));
+
+const answers = (state = List(), action) => {
+  switch (action.type) {
+    case actionTypes.GOT_ANSWERS:
+      debugger;
+      return updateAnswers(state, action);
+    default:
+      return state;
+  }
+};
+
 // reducers need to be split from original state
 export const reducers = combineReducers({
   routing: routerReducer,
@@ -51,5 +64,6 @@ export const reducers = combineReducers({
     }
   }),
   jobs: requestReducer,
-  config: configReducer
+  config: configReducer,
+  answers
 });
