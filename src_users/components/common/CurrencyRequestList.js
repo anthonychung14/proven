@@ -45,8 +45,21 @@ class CurrencyRequestList extends React.Component {
           paddingBottom: "20px"
         }}
       >
+        <Pagination
+          className="users-pagination pull-right"
+          bsSize="medium"
+          maxButtons={10}
+          first
+          last
+          next
+          prev
+          boundaryLinks
+          items={pages}
+          activePage={page}
+          onSelect={this.props.changePage}
+        />
         <Table bordered hover responsive striped>
-          <thead className="t-head">
+          <thead>
             <tr>
               <th>ID</th>
               <th>Symbol</th>
@@ -59,7 +72,7 @@ class CurrencyRequestList extends React.Component {
               <th>Action</th>
             </tr>
           </thead>
-          <tbody className="t-body">
+          <tbody>
             {currencyRequests.toList().map((currencyRequest, index) => {
               if (index >= start_offset && start_count < per_page) {
                 start_count++;
@@ -74,19 +87,6 @@ class CurrencyRequestList extends React.Component {
             })}
           </tbody>
         </Table>
-        <Pagination
-          className="users-pagination pull-right"
-          bsSize="medium"
-          maxButtons={10}
-          first
-          last
-          next
-          prev
-          boundaryLinks
-          items={pages}
-          activePage={page}
-          onSelect={this.props.changePage}
-        />
       </div>
     );
   }

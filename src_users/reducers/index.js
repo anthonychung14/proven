@@ -43,7 +43,10 @@ const configReducer = (state = fromJS(config), action) => {
 };
 
 const updateAnswers = (state = List(), action) =>
-  console.log(action) || fromJS(action.payload).map(i => i.get("answer"));
+  fromJS(action.payload).map(i => i.get("answer"));
+
+const updateQuestions = (state = List(), action) =>
+  fromJS(action.payload).map(i => i.get("question"));
 
 const answers = (state = List(), action) => {
   switch (action.type) {
@@ -59,7 +62,7 @@ const questions = (state = List(), action) => {
   switch (action.type) {
     case actionTypes.GOT_QUESTIONS:
       debugger;
-      return updateAnswers(state, action);
+      return updateQuestions(state, action);
     default:
       return state;
   }

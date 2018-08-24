@@ -1,4 +1,4 @@
-import { answers, authRef, provider } from "../config/firebase";
+import { answers, authRef, provider, questions } from "../config/firebase";
 import actionTypes from "../action-types";
 
 export const answerQuestion = question => async dispatch => {
@@ -31,7 +31,7 @@ export const deleteAnswers = () => async dispatch => {
 };
 
 export const askQuestion = question => async dispatch => {
-  questions.push({ question: question.questions });
+  questions.push({ question: question.question });
 };
 
 export const fetchQuestions = () => async dispatch => {
