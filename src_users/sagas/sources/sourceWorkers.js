@@ -77,6 +77,7 @@ export function* createWorker(
       ? withRandomFailure(fetchCryptoTask, isRequestToKill, requestId)
       : fetchCryptoTask;
 
+    yield call(delay, 300);
     const winner = yield race({
       task: fork(fetchTask, { requestId, batchId }),
       success: take(subToSuccess),
@@ -98,6 +99,7 @@ export function* fetchCryptoTask({ requestId, batchId }) {
     const symbol = request.get("symbol");
 
     const result = yield call(getResource, { fiat, symbol });
+    yield call(delay, 300);
     const price = result[fiat];
 
     yield put({

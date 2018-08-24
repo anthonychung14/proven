@@ -117,7 +117,6 @@ function* watchForCreate(createChannel, enqueueChannel, completeChannel) {
 
     // before enqueuing, make sure that it hasn't been canceled yet
 
-    console.log("creating requests", requestIds);
     // batchId -> [1,2,3,4,5]
     const batchTask = yield fork(createRequestWorkers, {
       enqueueChannel,
@@ -141,11 +140,9 @@ function* watchForCreate(createChannel, enqueueChannel, completeChannel) {
 
       if (isCanceled) {
         yield put(doneChannel, { requestId });
-        console.log("canceled broh");
         continue;
       }
 
-      console.log("en queued", requestId);
       yield put({
         type: actionTypes.ENQUEUE_REQUEST,
         payload: {
@@ -165,13 +162,10 @@ function* watchForCreate(createChannel, enqueueChannel, completeChannel) {
     });
 
     if (pause) {
-      console.log("wait to start again");
       yield take(actionTypes.START_AGAIN);
     } else {
       // yield cancel(watchTask);
       // yield cancel(batchTask);
-
-      console.log("we are finished");
     }
   }
 }

@@ -12,7 +12,7 @@ import "rc-slider/assets/index.css";
 const TimeTravel = ({ numActions: max, handleChange, presentSnapIndex }) => {
   return (
     <div>
-      <h3>Time Travel is possible</h3>
+      <h4>Time Travel</h4>
       <Slider max={max} onChange={handleChange} value={presentSnapIndex} />
       <h4>
         Present: {presentSnapIndex} / {max}

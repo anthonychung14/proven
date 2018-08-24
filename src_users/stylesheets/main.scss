@@ -1,6 +1,6 @@
 .progress {
   margin: 10px auto;
-  width: 300px;
+  width: 100%;
 }
 
 .nav {
@@ -24,6 +24,13 @@
 
 .mfga {
   font-size: 24px;
+}
+
+.progressbar {
+  flex: 1 0 50%;
+  text-align: center;
+  padding: 10px;
+  overflow: hidden;
 }
 
 .users-pagination {

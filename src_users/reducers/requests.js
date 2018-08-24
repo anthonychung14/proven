@@ -1,4 +1,12 @@
-import { OrderedMap, Map, OrderedSet, fromJS, Set, Record } from "immutable";
+import {
+  OrderedMap,
+  Map,
+  OrderedSet,
+  fromJS,
+  Set,
+  Record,
+  List
+} from "immutable";
 import uuid from "uuid-v4";
 import Ring from "ringjs";
 
@@ -17,19 +25,9 @@ import {
   getReqJobById
 } from "../selectors";
 
-export const Action = Record({
-  historicAction: undefined,
-  historicObject: undefined
-});
-
-const Snapshot = Record({
-  id: undefined,
-  creator: undefined,
-  action: Action(),
-  jobs: Map()
-});
-
 export const initialJobsState = fromJS({
+  activeBatch: null,
+  batches: List(),
   requestsById: OrderedMap(),
   requestsMounted: OrderedSet(),
   requestsCanceled: Set(),
@@ -73,9 +71,14 @@ export const createCurrencyRequests = (state, action) => {
     state.get("requestsById")
   );
 
+  const batches = state.get("batches");
+  const nextBatches = batches.push(batchId);
+
   return state
     .set("requestsById", newRequests)
-    .set("requestsMounted", newRequestsMounted);
+    .set("requestsMounted", newRequestsMounted)
+    .set("batches", nextBatches.shift())
+    .set("activeBatch", nextBatches.first());
 };
 
 export const enqueueRequestData = (state, action) => {
@@ -113,13 +116,21 @@ export const errorRequestData = (state, { payload }) => {
 export const resolveRequestData = (state, action) => {
   const request = state.getIn(["requestsById", id]);
   const {
-    payload: { id, timeComplete, price }
+    payload: { id, timeComplete, price },
+    meta
   } = action;
 
-  return state
+  const anyLeft = state
+    .get("requestsById")
+    .some(request => request.get("batchId") === meta);
+
+  const nextState = state
     .setIn(["requestsById", id, "timeComplete"], timeComplete)
     .setIn(["requestsById", id, "status"], "COMPLETE")
     .setIn(["requestsById", id, "value"], price);
+
+  // return anyLeft ? nextState.sea
+  return nextState;
 };
 
 export const retryRequest = (state, action) => {
@@ -131,6 +142,16 @@ export const retryRequest = (state, action) => {
 };
 
 export const clearRequests = state => initialSnapshotState;
+
+export const completeBatch = state => {
+  const key = state.get("present");
+  const path = ["snaps", key, "batches"];
+  const presentBatchList = state.getIn(path);
+
+  return state
+    .setIn(path, presentBatchList.shift())
+    .set("activeBatch", presentBatchList.first());
+};
 
 const messilyJumpOverTime = (state, action) => {
   // we expect to change the present key
@@ -175,6 +196,9 @@ const requests = (state = initialSnapshotState, action) => {
 
     case actionTypes.CLEAR_REQUESTS:
       return clearRequests(prevJobState);
+
+    // case actionTypes.COMPLETE_BATCH:
+    //   return completeBatch(prevState);
 
     case actionTypes.TIME_JUMP:
       return messilyJumpOverTime(prevState, action);

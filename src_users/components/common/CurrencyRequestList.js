@@ -2,11 +2,12 @@ import React from "react";
 import { connect } from "react-redux";
 import { Table, Pagination, ProgressBar } from "react-bootstrap";
 import CurrencyListElement from "./CurrencyListElement";
+import SliderProgress from "../../containers/SliderProgress";
 
 import { createAction } from "redux-actions";
 import actionTypes from "../../action-types";
 import { changePage } from "../../routing-actions";
-import { getRequestsById } from "../../selectors";
+import { getRequestsById, getBatches } from "../../selectors";
 
 // User list component
 class CurrencyRequestList extends React.Component {
@@ -29,7 +30,7 @@ class CurrencyRequestList extends React.Component {
   // render
   render() {
     // pagination
-    const { currencyRequests, page } = this.props;
+    const { currencyRequests, page, batches } = this.props;
     const per_page = 10;
     const pages = Math.ceil(currencyRequests.length / per_page);
     const start_offset = (page - 1) * per_page;
@@ -67,19 +68,23 @@ class CurrencyRequestList extends React.Component {
           </tbody>
         </Table>
 
-        <Pagination
-          className="users-pagination pull-right"
-          bsSize="medium"
-          maxButtons={10}
-          first
-          last
-          next
-          prev
-          boundaryLinks
-          items={pages}
-          activePage={page}
-          onSelect={this.props.changePage}
-        />
+        <div style={{ display: "flex", flex: 1, flexDirection: "column" }}>
+          <Pagination
+            className="users-pagination pull-right"
+            bsSize="medium"
+            maxButtons={10}
+            first
+            last
+            next
+            prev
+            boundaryLinks
+            items={pages}
+            activePage={page}
+            onSelect={this.props.changePage}
+          />
+
+          <SliderProgress type="progress" />
+        </div>
       </div>
     );
   }
@@ -125,7 +130,8 @@ function mapStateToProps(state) {
     // https://github.com/reactjs/react-router-redux#how-do-i-access-router-state-in-a-container-component
     // react-router-redux wants you to get the url data by passing the props through a million components instead of
     // reading it directly from the state, which is basically why you store the url data in the state (to have access to it)
-    page: Number(state.routing.locationBeforeTransitions.query.page) || 1
+    page: Number(state.routing.locationBeforeTransitions.query.page) || 1,
+    batches: getBatches(state)
   };
 }
 
