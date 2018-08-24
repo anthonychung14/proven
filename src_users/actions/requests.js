@@ -12,6 +12,7 @@ const initCurrencyRequest = ({ currency, fiat }) =>
     timeEnqueued: null,
     timeStarted: null,
     timeComplete: null,
+    workerNumber: null,
     fiat,
     value: null,
     status: "CREATED"

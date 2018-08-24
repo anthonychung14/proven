@@ -70,6 +70,7 @@ class CurrencyRequestList extends React.Component {
               <th>Price</th>
               <th>Status</th>
               <th>Action</th>
+              <th>Worker</th>
             </tr>
           </thead>
           <tbody>

@@ -94,10 +94,14 @@ export const enqueueRequestData = (state, action) => {
     .setIn(["requestsById", requestId, "status"], "ENQUEUED");
 };
 
-export const beginRequestData = (state, { payload: { id, timeStarted } }) => {
+export const beginRequestData = (
+  state,
+  { payload: { id, timeStarted, workerIndex } }
+) => {
   return state
     .setIn(["requestsById", id, "timeStarted"], timeStarted)
-    .setIn(["requestsById", id, "status"], "STARTED");
+    .setIn(["requestsById", id, "status"], "STARTED")
+    .setIn(["requestsById", id, "workerNumber"], workerIndex + 1);
 };
 
 export const cancelRequestData = (state, { payload }) => {

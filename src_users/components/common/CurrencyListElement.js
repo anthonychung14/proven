@@ -42,7 +42,8 @@ class CurrencyListElement extends React.Component {
       timeStarted,
       status,
       symbol,
-      value
+      value,
+      workerNumber
     } = this.props;
 
     return (
@@ -74,6 +75,7 @@ class CurrencyListElement extends React.Component {
         <td>
           <ActionButton id={id} timeComplete={timeComplete} status={status} />
         </td>
+        <td>{workerNumber ? workerNumber : "..."}</td>
       </tr>
     );
   }
@@ -92,6 +94,7 @@ export default compose(
     fiat: currencyRequest.get("fiat"),
     value: currencyRequest.get("value"),
     status: currencyRequest.get("status"),
+    workerNumber: currencyRequest.get("workerNumber"),
     timeComplete: currencyRequest.get("timeComplete"),
     timeStarted: currencyRequest.get("timeStarted"),
     timeEnqueued: currencyRequest.get("timeEnqueued")

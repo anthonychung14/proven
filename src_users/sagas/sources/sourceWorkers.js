@@ -65,7 +65,7 @@ export function* createWorker(
 
     yield put({
       type: actionTypes.START_REQUEST,
-      payload: { id: requestId, timeStarted: new Date() }
+      payload: { id: requestId, timeStarted: new Date(), workerIndex }
     });
 
     const subToSuccess = isSuccessful(requestId);
