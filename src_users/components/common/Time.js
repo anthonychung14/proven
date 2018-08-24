@@ -233,7 +233,7 @@ class Time extends React.Component {
             </Resizable>
           </div>
         </div>
-        <div style={{ width: "100%" }}>
+        <div style={{ width: "100%", paddingTop: "30px" }}>
           <SliderProgress />
         </div>
       </div>

@@ -5,6 +5,7 @@ import { IndexLinkContainer, LinkContainer } from "react-router-bootstrap";
 
 import { fetchUser } from "../actions/questions";
 import "../stylesheets/main.scss";
+import TimeTravel from "./common/TimeTravel";
 
 const Header = () => (
   <div className="header">
@@ -57,7 +58,8 @@ export class App extends React.Component {
       >
         <Header />
         <Routes />
-        <div>{children}</div>
+        <div style={{ display: "flex" }}>{children}</div>
+        <TimeTravel />
       </div>
     );
   }

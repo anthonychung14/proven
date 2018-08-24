@@ -2,7 +2,6 @@ import React from "react";
 import { connect } from "react-redux";
 import CurrencyRequestList from "./common/CurrencyRequestList";
 import Time from "./common/Time";
-import TimeTravel from "./common/TimeTravel";
 import Menu from "./common/Menu";
 
 export default class Home extends React.Component {
@@ -13,9 +12,7 @@ export default class Home extends React.Component {
         className="page-home"
         style={{
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          flexWrap: "wrap",
+          alignItems: "stretch",
           padding: "10px"
         }}
       >
@@ -32,7 +29,6 @@ export default class Home extends React.Component {
           </div>
           <Time />
         </div>
-        <TimeTravel />
       </div>
     );
   }
